@@ -3,6 +3,7 @@ package com.project.thevergov.service.impl;
 import com.project.thevergov.model.entity.Comment;
 import com.project.thevergov.repository.CommentRepository;
 import com.project.thevergov.service.CommentService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +19,10 @@ import java.util.UUID;
  * uses transactions to ensure data integrity.
  */
 @Service
+@RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-
-    public CommentServiceImpl(CommentRepository commentRepository) {
-        this.commentRepository = commentRepository;
-    }
 
     /**
      * Saves a comment to the database.
@@ -85,7 +83,15 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findByUserId(userId);
     }
 
+    /**
+     * Deletes a comment by its ID.
+     * <p>
+     * This method is transactional to ensure that the comment is deleted consistently.
+     *
+     * @param id the ID of the comment to be deleted
+     */
     @Override
+    @Transactional
     public void deleteComment(Long id) {
         commentRepository.deleteById(id);
     }

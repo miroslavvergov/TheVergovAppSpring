@@ -3,30 +3,29 @@ package com.project.thevergov.service.impl;
 import com.project.thevergov.model.entity.User;
 import com.project.thevergov.repository.UserRepository;
 import com.project.thevergov.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 import java.util.UUID;
 
 /**
  * Service implementation for managing users.
- *
+ * <p>
  * This class provides implementations for the methods defined in the UserService
  * interface. It interacts with the UserRepository to perform CRUD operations and
  * uses transactions to ensure data integrity.
  */
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
     /**
      * Saves a user to the database.
-     *
+     * <p>
      * This method is transactional to ensure that the user is saved consistently.
      *
      * @param user the user to be saved
@@ -40,7 +39,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Retrieves a user by their ID.
-     *
+     * <p>
      * This method is read-only transactional, optimizing for performance since it
      * does not modify data.
      *
@@ -55,7 +54,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Retrieves a user by their username.
-     *
+     * <p>
      * This method is read-only transactional, optimizing for performance since it
      * does not modify data.
      *
@@ -70,7 +69,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Retrieves a user by their email.
-     *
+     * <p>
      * This method is read-only transactional, optimizing for performance since it
      * does not modify data.
      *
@@ -85,7 +84,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Deletes a user by their ID.
-     *
+     * <p>
      * This method is transactional to ensure that the user is deleted consistently.
      *
      * @param id the ID of the user to be deleted

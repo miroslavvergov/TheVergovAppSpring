@@ -1,85 +1,109 @@
 package com.project.thevergov.service.impl;
 
+import com.project.thevergov.model.dto.ArticleResponseDTO;
+import com.project.thevergov.model.dto.CreationArticleDTO;
 import com.project.thevergov.model.entity.Article;
+import com.project.thevergov.model.entity.User;
+import com.project.thevergov.model.enums.Category;
 import com.project.thevergov.repository.ArticleRepository;
 import com.project.thevergov.service.ArticleService;
+import com.project.thevergov.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Service implementation for managing articles.
- *
+ * <p>
  * This class provides implementations for the methods defined in the ArticleService
  * interface. It interacts with the ArticleRepository to perform CRUD operations and
  * uses transactions to ensure data integrity.
  */
 @Service
+@RequiredArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
 
-    public ArticleServiceImpl(ArticleRepository articleRepository) {
-        this.articleRepository = articleRepository;
-    }
 
     /**
-     * Saves an article to the database.
+     * Creates a new article.
      *
-     * This method is transactional to ensure that the article is saved consistently.
-     *
-     * @param article the article to be saved
-     * @return the saved article
+     * @param articleDTO the DTO containing article data
+     * @return the created article
      */
     @Override
     @Transactional
-    public Article saveArticle(Article article) {
+    public Article createArticle(CreationArticleDTO articleDTO) {
+        // Retrieve the author by ID
+        Optional<User> authorOptional = userService.getUserById(articleDTO.getAuthorId());
+        if (!authorOptional.isPresent()) {
+            throw new IllegalArgumentException("Author not found");
+        }
+        User author = authorOptional.get();
+
+        // Map the DTO to the entity
+        Article article = modelMapper.map(articleDTO, Article.class);
+        article.setAuthor(author);
+        article.setCreatedDate(LocalDateTime.now());
+        article.setUpdatedDate(LocalDateTime.now());
+
         return articleRepository.save(article);
     }
 
-    /**
-     * Retrieves an article by its ID.
-     *
-     * This method is read-only transactional, optimizing for performance since it
-     * does not modify data.
-     *
-     * @param id the ID of the article
-     * @return an Optional containing the found article, or empty if no article found
-     */
     @Override
     @Transactional(readOnly = true)
-    public Optional<Article> getArticleById(Long id) {
-        return articleRepository.findById(id);
+    public Optional<ArticleResponseDTO> getArticleById(Long id) {
+        return articleRepository.findById(id).map(article -> modelMapper.map(article, ArticleResponseDTO.class));
     }
 
-    /**
-     * Retrieves articles by the ID of their author.
-     *
-     * This method is read-only transactional, optimizing for performance since it
-     * does not modify data.
-     *
-     * @param authorId the ID of the author
-     * @return a list of articles written by the specified author
-     */
     @Override
     @Transactional(readOnly = true)
-    public List<Article> getArticlesByAuthorId(UUID authorId) {
-        return articleRepository.findByAuthorId(authorId);
+    public List<ArticleResponseDTO> getArticlesByAuthorId(UUID authorId) {
+        List<Article> articles = articleRepository.findByAuthorId(authorId);
+        return articles.stream()
+                .map(article -> modelMapper.map(article, ArticleResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
-    /**
-     * Deletes an article by its ID.
-     *
-     * This method is transactional to ensure that the article is deleted consistently.
-     *
-     * @param id the ID of the article to be deleted
-     */
     @Override
     @Transactional
     public void deleteArticle(Long id) {
         articleRepository.deleteById(id);
     }
-}
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ArticleResponseDTO> getAllArticlesSortByDate(int page, int size) {
+        Page<Article> articlesPage = articleRepository.findAll(PageRequest.of(page, size, Sort.by("createdDate")));
+        List<ArticleResponseDTO> articlesDTOs = articlesPage.getContent().stream()
+                .map(article -> modelMapper.map(article, ArticleResponseDTO.class))
+                .collect(Collectors.toList());
+        return new PageImpl<>(articlesDTOs, articlesPage.getPageable(), articlesPage.getTotalElements());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ArticleResponseDTO> getAllArticlesByCategory(Set<Category> categories, int page, int size) {
+        Page<Article> articlesPage = articleRepository.findByCategoriesIn(categories, PageRequest.of(page, size, Sort.by("createdDate")));
+        List<ArticleResponseDTO> articlesDTOs = articlesPage.getContent().stream()
+                .map(article -> modelMapper.map(article, ArticleResponseDTO.class))
+                .collect(Collectors.toList());
+        return new PageImpl<>(articlesDTOs, articlesPage.getPageable(), articlesPage.getTotalElements());
+    }
+}
