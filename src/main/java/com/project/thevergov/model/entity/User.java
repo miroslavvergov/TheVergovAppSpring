@@ -4,6 +4,8 @@ import com.project.thevergov.model.enums.Role;
 import lombok.Getter;
 import lombok.Setter;
 import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -20,7 +22,7 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue
+    @UuidGenerator
     private UUID id;
 
     @Column(nullable = false, unique = true)

@@ -11,16 +11,16 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
-  liquibase:
-    enabled: true
-    change-log: classpath:db/changelog-master.xml
+# liquibase:
+#   enabled: true
+#   change-log: classpath:db/changelog-master.xml
 
-springdoc:
-  api-docs:
-    path: /authentication-docs
-  swagger-ui:
-    path: /authentication-docs/swagger-ui-custom.html
+#springdoc:
+#  api-docs:
+#    path: /authentication-docs
+#  swagger-ui:
+#    path: /authentication-docs/swagger-ui-custom.html
 
-logging.level:
-  root: INFO
-  liquibase: INFO
+#logging.level:
+#  root: INFO
+#  liquibase: INFO

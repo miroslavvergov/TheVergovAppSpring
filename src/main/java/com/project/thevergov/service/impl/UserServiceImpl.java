@@ -6,6 +6,7 @@ import com.project.thevergov.model.dto.LoginRequest;
 import com.project.thevergov.model.dto.LoginResponse;
 import com.project.thevergov.model.dto.SignupRequest;
 import com.project.thevergov.model.entity.User;
+import com.project.thevergov.model.enums.Role;
 import com.project.thevergov.repository.UserRepository;
 import com.project.thevergov.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,7 +48,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User signup(SignupRequest request) {
-        String email = request.email();
+        String email = request.getEmail();
         Optional<User> existingUser = userRepository.findByUsername(email);
 
         if (existingUser.isPresent()) {
@@ -55,8 +57,15 @@ public class UserServiceImpl implements UserService {
 
         User user = modelMapper.map(request, User.class);
 
-        String hashedPassword = passwordEncoder.encode(request.password());
+        String hashedPassword = passwordEncoder.encode(request.getPassword());
         user.setPassword(hashedPassword);
+
+        user.setRole(Role.USER);
+        user.setId(UUID.randomUUID());
+        LocalDateTime creationTime = LocalDateTime.now();
+        user.setCreatedAt(creationTime);
+        user.setUpdatedAt(creationTime);
+
 
         return userRepository.save(user);
     }

@@ -54,7 +54,7 @@ public class AuthController {
         try {
             loginResponse = loginService.login(request);
 
-        } catch (BadCredentialsException e) {
+        } catch (Exception e) {
             //TODO
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiErrorResponse(400, e.getMessage()));
         }
