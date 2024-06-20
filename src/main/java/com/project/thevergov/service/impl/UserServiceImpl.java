@@ -1,9 +1,19 @@
 package com.project.thevergov.service.impl;
 
+import com.project.thevergov.exception.DuplicateException;
+import com.project.thevergov.helpers.JwtHelper;
+import com.project.thevergov.model.dto.LoginRequest;
+import com.project.thevergov.model.dto.LoginResponse;
+import com.project.thevergov.model.dto.SignupRequest;
 import com.project.thevergov.model.entity.User;
 import com.project.thevergov.repository.UserRepository;
 import com.project.thevergov.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +32,35 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
+
+    /**
+     * Saves a user to the database.
+     * <p>
+     * This method is transactional to ensure that the user is saved consistently.
+     *
+     * @param request the user to be saved
+     * @return the saved user
+     */
+    @Override
+    @Transactional
+    public User signup(SignupRequest request) {
+        String email = request.email();
+        Optional<User> existingUser = userRepository.findByUsername(email);
+
+        if (existingUser.isPresent()) {
+            throw new DuplicateException(String.format("User with the email address '%s' already exists.", email));
+        }
+
+        User user = modelMapper.map(request, User.class);
+
+        String hashedPassword = passwordEncoder.encode(request.password());
+        user.setPassword(hashedPassword);
+
+        return userRepository.save(user);
+    }
+
 
     /**
      * Saves a user to the database.
@@ -31,11 +70,7 @@ public class UserServiceImpl implements UserService {
      * @param user the user to be saved
      * @return the saved user
      */
-    @Override
-    @Transactional
-    public User saveUser(User user) {
-        return userRepository.save(user);
-    }
+
 
     /**
      * Retrieves a user by their ID.
@@ -94,5 +129,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(UUID id) {
         userRepository.deleteById(id);
     }
+
+
 }
 
