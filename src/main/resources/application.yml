@@ -1,15 +1,67 @@
 spring:
+  profiles:
+    active: ${ACTIVE_PROFILE:dev}
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      fail-on-empty-beans: false
+      close-closeable: true
+      flush-after-write-value: true
+      write-date-keys-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
   datasource:
-    url: jdbc:mysql://localhost:3306/thevergov_db
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   jpa:
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQLDialect
+    generate-ddl: true
+    show-sql: true
     hibernate:
       ddl-auto: update
-    show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+  sql:
+    init:
+      mode: never
+      continue-on-error: false
+      schema-locations: classpath:/data/schema.sql
+      data-locations: classpath:/data/data.sql
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+  mail:
+    host: ${EMAIL_HOST}
+    port: ${EMAIL_PORT}
+    username: ${EMAIL_ID}
+    password: ${EMAIL_PASSWORD}
+    default-encoding: UTF-8
+    properties:
+      mail:
+        mime:
+          charset: UTF
+        smtp:
+          writetimeout: 10000
+          connectiontimeout: 10000
+          timeout: 10000
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    verify:
+      host: ${VERIFY_EMAIL_HOST}
+server:
+  port: ${CONTAINER_PORT:8080}
+  error:
+    path: /user/error
+    whitelabel:
+      enabled: false
 
 # liquibase:
 #   enabled: true
