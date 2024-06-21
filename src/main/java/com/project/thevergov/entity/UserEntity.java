@@ -41,8 +41,6 @@ public class UserEntity extends Auditable {
     @Column(updatable = false, unique = true, nullable = false)
     private String email;
 
-    private String password;
-
     //reimplement login attempt in here
     private Integer loginAttempts;
 
