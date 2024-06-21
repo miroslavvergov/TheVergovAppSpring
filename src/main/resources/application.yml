@@ -16,14 +16,14 @@ spring:
     password: ${DB_PASSWORD}
   jpa:
     open-in-view: false
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     generate-ddl: true
     show-sql: true
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
   sql:
     init:

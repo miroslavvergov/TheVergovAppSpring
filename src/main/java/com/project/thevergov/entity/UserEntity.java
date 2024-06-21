@@ -47,8 +47,6 @@ public class UserEntity extends Auditable {
     //reimplement login attempt in here
     private LocalDateTime lastLogin;
 
-    private String phone;
-
     private String bio;
 
     private String imageUrl;
@@ -69,7 +67,7 @@ public class UserEntity extends Auditable {
     private String qrCodeSecret;
 
     //just an idea still
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "text")
     private String qrCodeImageUri;
 
     @ManyToOne(fetch = EAGER)

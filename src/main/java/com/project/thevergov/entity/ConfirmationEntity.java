@@ -1,10 +1,7 @@
 package com.project.thevergov.entity;
 
 import com.fasterxml.jackson.annotation.*;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -25,7 +22,9 @@ import static jakarta.persistence.FetchType.EAGER;
 @JsonInclude(NON_DEFAULT) // Include only non-default values in JSON serialization
 public class ConfirmationEntity extends Auditable {
 
-    private String key;
+
+    //TODO fix key persistence to DB
+    private String uuidKey;
 
     // One-to-One Relationship with UserEntity
     @OneToOne(targetEntity = UserEntity.class, fetch = EAGER) // Eagerly fetch the UserEntity
@@ -39,12 +38,12 @@ public class ConfirmationEntity extends Auditable {
     private UserEntity userEntity;
 
     /**
-     * Constructor: Creates a CredentialEntity with a given UserEntity and password.
+     * Constructor: Creates a ConfirmationEntity with a given UserEntity and password.
      *
      * @param userEntity The associated UserEntity
      */
     public ConfirmationEntity(UserEntity userEntity) {
         this.userEntity = userEntity;
-        this.key = UUID.randomUUID().toString();
+        this.uuidKey = UUID.randomUUID().toString();
     }
 }
