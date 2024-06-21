@@ -2,11 +2,11 @@ package com.project.thevergov.service.impl;
 
 import com.project.thevergov.exception.NotFoundException;
 import com.project.thevergov.helpers.JwtHelper;
-import com.project.thevergov.model.dto.LoginRequest;
-import com.project.thevergov.model.dto.LoginResponse;
-import com.project.thevergov.model.entity.LoginAttempt;
-import com.project.thevergov.model.entity.User;
-import com.project.thevergov.model.enums.Role;
+import com.project.thevergov.domain.dto.LoginRequest;
+import com.project.thevergov.domain.dto.LoginResponse;
+import com.project.thevergov.entity.LoginAttempt;
+import com.project.thevergov.entity.UserEntity;
+import com.project.thevergov.enumeration.Role;
 import com.project.thevergov.repository.LoginAttemptRepository;
 import com.project.thevergov.repository.UserRepository;
 import com.project.thevergov.service.LoginService;
@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,16 +45,16 @@ public class LoginServiceImpl implements LoginService {
     @Transactional
     public LoginResponse loginWithoutHeader(LoginRequest request) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         } catch (BadCredentialsException e) {
-            addLoginAttempt(request.email(), false);
+            addLoginAttempt(request.getEmail(), false);
             throw e;
         }
-        String email = request.email();
+        String email = request.getEmail();
         Role role = null;
+        String token = null;
 
-
-        Optional<User> user =
+        Optional<UserEntity> user =
                 userRepository.findByEmail(email);
         if (user.isPresent()) {
             role = user.get().getRole();
@@ -61,8 +62,12 @@ public class LoginServiceImpl implements LoginService {
         } else {
             throw new NotFoundException("User not found with email address: " + email);
         }
-        String token = JwtHelper.generateToken(email, role);
-        addLoginAttempt(request.email(), true);
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            token = JwtHelper.generateToken(email, role);
+        }else {
+            token = SecurityContextHolder.getContext().getAuthentication().toString();
+        }
+        addLoginAttempt(request.getEmail(), true);
 
         LoginResponse loginResponse = modelMapper.map(request, LoginResponse.class);
         loginResponse.setToken(token);

@@ -1,35 +1,62 @@
 package com.project.thevergov.service.impl;
 
 
-
-
-import com.project.thevergov.model.entity.User;
+import com.project.thevergov.enumeration.Role;
 import com.project.thevergov.repository.UserRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.project.thevergov.exception.NotFoundException;
-
-
-import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+
+    @Getter
+    @Setter
+    private Role role;
+
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User not found with email address: " + email));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println(role);
+        if (role == Role.OWNER) {
 
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .build();
+
+
+
+
+
+
+
+
+
+
+
+        } else if (role == Role.ADMIN) {
+
+        } else if (role == Role.USER) {
+
+        }
+        return null;
     }
+
+    // @Override
+    // public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    //     User user = userRepository.findByEmail(email)
+    //             .orElseThrow(() -> new NotFoundException("User not found with email address: " + email));
+//
+    //     return org.springframework.security.core.userdetails.User.builder()
+    //             .username(user.getEmail())
+    //             .password(user.getPassword())
+    //             .build();
+    // }
+
+
 }
 

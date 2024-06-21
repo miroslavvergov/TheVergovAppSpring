@@ -1,10 +1,10 @@
 package com.project.thevergov.service.impl;
 
-import com.project.thevergov.model.dto.ArticleResponse;
-import com.project.thevergov.model.dto.ArticleCreation;
-import com.project.thevergov.model.entity.Article;
-import com.project.thevergov.model.entity.User;
-import com.project.thevergov.model.enums.Category;
+import com.project.thevergov.domain.dto.ArticleResponse;
+import com.project.thevergov.domain.dto.ArticleCreation;
+import com.project.thevergov.entity.Article;
+import com.project.thevergov.entity.UserEntity;
+import com.project.thevergov.enumeration.Category;
 import com.project.thevergov.repository.ArticleRepository;
 import com.project.thevergov.service.ArticleService;
 import com.project.thevergov.service.UserService;
@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -50,11 +49,11 @@ public class ArticleServiceImpl implements ArticleService {
     @Transactional
     public Article createArticle(ArticleCreation articleDTO) {
         // Retrieve the author by ID
-        Optional<User> authorOptional = userService.getUserByEmail(articleDTO.getAuthorEmail());
+        Optional<UserEntity> authorOptional = userService.getUserByEmail(articleDTO.getAuthorEmail());
         if (!authorOptional.isPresent()) {
             throw new IllegalArgumentException("Author not found");
         }
-        User author = authorOptional.get();
+        UserEntity author = authorOptional.get();
 
         // Map the DTO to the entity
         Article article = modelMapper.map(articleDTO, Article.class);
@@ -73,7 +72,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ArticleResponse> getArticlesByAuthorId(UUID authorId) {
+    public List<ArticleResponse> getArticlesByAuthorId(Long authorId) {
         List<Article> articles = articleRepository.findByAuthorId(authorId);
         return articles.stream()
                 .map(article -> modelMapper.map(article, ArticleResponse.class))

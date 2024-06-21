@@ -1,4 +1,4 @@
-package com.project.thevergov.model.dto;
+package com.project.thevergov.domain.dto;
 
 
 import lombok.Getter;

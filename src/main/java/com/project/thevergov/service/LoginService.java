@@ -1,8 +1,8 @@
 package com.project.thevergov.service;
 
-import com.project.thevergov.model.dto.LoginRequest;
-import com.project.thevergov.model.dto.LoginResponse;
-import com.project.thevergov.model.entity.LoginAttempt;
+import com.project.thevergov.domain.dto.LoginRequest;
+import com.project.thevergov.domain.dto.LoginResponse;
+import com.project.thevergov.entity.LoginAttempt;
 
 import java.util.List;
 

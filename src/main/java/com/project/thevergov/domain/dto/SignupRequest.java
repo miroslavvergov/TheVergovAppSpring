@@ -1,4 +1,4 @@
-package com.project.thevergov.model.dto;
+package com.project.thevergov.domain.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package com.project.thevergov.model.entity;
+package com.project.thevergov.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -30,7 +30,7 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity userEntity;
 
     private LocalDateTime createdAt;
 

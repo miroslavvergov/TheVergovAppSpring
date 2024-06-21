@@ -1,19 +1,13 @@
 package com.project.thevergov.service.impl;
 
+import com.project.thevergov.entity.UserEntity;
 import com.project.thevergov.exception.DuplicateException;
-import com.project.thevergov.helpers.JwtHelper;
-import com.project.thevergov.model.dto.LoginRequest;
-import com.project.thevergov.model.dto.LoginResponse;
-import com.project.thevergov.model.dto.SignupRequest;
-import com.project.thevergov.model.entity.User;
-import com.project.thevergov.model.enums.Role;
+import com.project.thevergov.domain.dto.SignupRequest;
+import com.project.thevergov.enumeration.Role;
 import com.project.thevergov.repository.UserRepository;
 import com.project.thevergov.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,12 +41,12 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional
-    public User signup(SignupRequest request) {
+    public UserEntity signup(SignupRequest request) {
         String email = request.getEmail();
         String username = request.getUsername();
 
-        Optional<User> existingUserForEmail = userRepository.findByEmail(email);
-        Optional<User> existingUserForUsername = userRepository.findByUsername(username);
+        Optional<UserEntity> existingUserForEmail = userRepository.findByEmail(email);
+        Optional<UserEntity> existingUserForUsername = userRepository.findByUsername(username);
 
 
         if (existingUserForEmail.isPresent()) {
@@ -61,18 +55,18 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateException(String.format("User with the username '%s' already exists.", username));
         }
 
-        User user = modelMapper.map(request, User.class);
+        UserEntity userEntity = modelMapper.map(request, UserEntity.class);
 
         String hashedPassword = passwordEncoder.encode(request.getPassword());
-        user.setPassword(hashedPassword);
+        userEntity.setPassword(hashedPassword);
 
-        user.setRole(Role.USER);
-        user.setId(UUID.randomUUID());
+        userEntity.setRole(Role.USER);
+        userEntity.setId(UUID.randomUUID());
         LocalDateTime creationTime = LocalDateTime.now();
-        user.setCreatedAt(creationTime);
-        user.setUpdatedAt(creationTime);
+        userEntity.setCreatedAt(creationTime);
+        userEntity.setUpdatedAt(creationTime);
 
-        return userRepository.save(user);
+        return userRepository.save(userEntity);
     }
 
 
@@ -97,7 +91,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<User> getUserById(UUID id) {
+    public Optional<UserEntity> getUserById(UUID id) {
         return userRepository.findById(id);
     }
 
@@ -112,7 +106,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<User> getUserByUsername(String username) {
+    public Optional<UserEntity> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
@@ -127,7 +121,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<User> getUserByEmail(String email) {
+    public Optional<UserEntity> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
@@ -143,6 +137,21 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(UUID id) {
         userRepository.deleteById(id);
     }
+
+  //  @Override
+  //  public void makeAdmin(String email) {
+  //      Optional<UserEntity> optionalUser = userRepository.findByEmail(email);
+  //      UserEntity userEntity = null;
+//
+  //      if (optionalUser.isPresent()){
+  //          userEntity = optionalUser.get();
+  //          userEntity.setRole(Role.ADMIN);
+  //      } else {
+  //          throw new NotFoundException("User not found with email address: " + email);
+  //      }
+//
+  //      userRepository.saveAndFlush(userEntity);
+  //  }
 
 
 }

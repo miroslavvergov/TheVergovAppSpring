@@ -1,4 +1,4 @@
-package com.project.thevergov.model.enums;
+package com.project.thevergov.enumeration;
 
 /**
  * Defines the roles a user can have within the application.
@@ -7,6 +7,10 @@ package com.project.thevergov.model.enums;
  */
 public enum Role {
     USER,
-    ADMIN
+
+    ADMIN,
+
+    //THERE CAN BE ONLY ONE OWNER - Miroslav Vergov
+    OWNER
 }
 

@@ -1,9 +1,7 @@
 package com.project.thevergov.service;
 
-import com.project.thevergov.model.dto.LoginRequest;
-import com.project.thevergov.model.dto.LoginResponse;
-import com.project.thevergov.model.dto.SignupRequest;
-import com.project.thevergov.model.entity.User;
+import com.project.thevergov.domain.dto.SignupRequest;
+import com.project.thevergov.entity.UserEntity;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -16,9 +14,11 @@ import java.util.UUID;
  * the business logic for these operations.
  */
 public interface UserService {
-    User signup(SignupRequest user);
-    Optional<User> getUserById(UUID id);
-    Optional<User> getUserByUsername(String username);
-    Optional<User> getUserByEmail(String email);
+    UserEntity signup(SignupRequest user);
+    Optional<UserEntity> getUserById(UUID id);
+    Optional<UserEntity> getUserByUsername(String username);
+    Optional<UserEntity> getUserByEmail(String email);
     void deleteUser(UUID id);
+
+    void makeAdmin(String email);
 }

@@ -1,6 +1,6 @@
 package com.project.thevergov.service;
 
-import com.project.thevergov.model.entity.Comment;
+import com.project.thevergov.entity.Comment;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +17,7 @@ public interface CommentService {
     Comment saveComment(Comment comment);
     Optional<Comment> getCommentById(Long id);
     List<Comment> getCommentsByArticleId(Long articleId);
-    List<Comment> getCommentsByUserId(UUID userId);
+    List<Comment> getCommentsByUserId(Long userId);
     void deleteComment(Long id);
 }
 

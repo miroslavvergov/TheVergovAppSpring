@@ -1,6 +1,6 @@
-package com.project.thevergov.model.entity;
+package com.project.thevergov.entity;
 
-import com.project.thevergov.model.enums.Category;
+import com.project.thevergov.enumeration.Category;
 import lombok.Getter;
 import lombok.Setter;
 import jakarta.persistence.*;
@@ -38,7 +38,7 @@ public class Article {
 
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
-    private User author;
+    private UserEntity author;
 
     @ElementCollection(targetClass = Category.class)
     @Enumerated(EnumType.STRING)

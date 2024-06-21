@@ -1,6 +1,6 @@
 package com.project.thevergov.service.impl;
 
-import com.project.thevergov.model.entity.Comment;
+import com.project.thevergov.entity.Comment;
 import com.project.thevergov.repository.CommentRepository;
 import com.project.thevergov.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -79,7 +79,7 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<Comment> getCommentsByUserId(UUID userId) {
+    public List<Comment> getCommentsByUserId(Long userId) {
         return commentRepository.findByUserId(userId);
     }
 

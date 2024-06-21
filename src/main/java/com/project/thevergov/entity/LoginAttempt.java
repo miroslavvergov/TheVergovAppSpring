@@ -1,4 +1,4 @@
-package com.project.thevergov.model.entity;
+package com.project.thevergov.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

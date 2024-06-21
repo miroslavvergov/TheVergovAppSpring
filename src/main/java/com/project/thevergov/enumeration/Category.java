@@ -1,4 +1,4 @@
-package com.project.thevergov.model.enums;
+package com.project.thevergov.enumeration;
 
 public enum Category {
     LIFESTYLE,

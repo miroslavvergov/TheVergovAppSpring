@@ -1,6 +1,6 @@
-package com.project.thevergov.model.dto;
+package com.project.thevergov.domain.dto;
 
-import com.project.thevergov.model.enums.Category;
+import com.project.thevergov.enumeration.Category;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;

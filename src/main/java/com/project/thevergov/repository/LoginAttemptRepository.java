@@ -1,7 +1,7 @@
 package com.project.thevergov.repository;
 
 
-import com.project.thevergov.model.entity.LoginAttempt;
+import com.project.thevergov.entity.LoginAttempt;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

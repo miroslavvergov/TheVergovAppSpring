@@ -1,7 +1,7 @@
 package com.project.thevergov.helpers;
 
 import com.project.thevergov.exception.AccessDeniedException;
-import com.project.thevergov.model.enums.Role;
+import com.project.thevergov.enumeration.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -27,13 +27,8 @@ public class JwtHelper {
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(MINUTES, ChronoUnit.MINUTES)))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .claim("role", role.name())
                 .compact();
-       // return Jwts.builder()
-       //         .subject(email)
-       //         .issuedAt(Date.from(now))
-       //         .expiration(Date.from(now.plus(MINUTES, ChronoUnit.MINUTES)))
-       //         .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-       //         .compact();
     }
 
     public static String extractUsername(String token) {

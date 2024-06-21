@@ -1,11 +1,9 @@
 package com.project.thevergov.web;
 
-import com.project.thevergov.model.dto.ArticleResponse;
-import com.project.thevergov.model.dto.ArticleCreation;
-import com.project.thevergov.model.entity.Article;
-import com.project.thevergov.model.enums.Category;
+import com.project.thevergov.domain.dto.ArticleResponse;
+import com.project.thevergov.domain.dto.ArticleCreation;
+import com.project.thevergov.enumeration.Category;
 import com.project.thevergov.service.ArticleService;
-import com.project.thevergov.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * REST controller for managing articles.
@@ -32,7 +29,6 @@ import java.util.UUID;
 public class ArticleController {
 
     private final ArticleService articleService;
-    private final UserService userService;
 
 
     /**
@@ -41,7 +37,7 @@ public class ArticleController {
      * @param creationArticleDTO the DTO containing article data
      * @return the created article
      */
-    @PostMapping
+    @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createArticle(@Valid @RequestBody ArticleCreation creationArticleDTO, BindingResult result) {
         if (result.hasErrors()) {
@@ -68,7 +64,7 @@ public class ArticleController {
      * @return the list of articles by the author
      */
     @GetMapping("/author/{authorId}")
-    public List<ArticleResponse> getArticlesByAuthorId(@PathVariable UUID authorId) {
+    public List<ArticleResponse> getArticlesByAuthorId(@PathVariable Long authorId) {
         return articleService.getArticlesByAuthorId(authorId);
     }
 

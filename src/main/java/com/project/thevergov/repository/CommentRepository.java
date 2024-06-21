@@ -1,6 +1,6 @@
 package com.project.thevergov.repository;
 
-import com.project.thevergov.model.entity.Comment;
+import com.project.thevergov.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.UUID;
@@ -27,6 +27,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      * @param userId the ID of the user
      * @return a list of comments made by the specified user
      */
-    List<Comment> findByUserId(UUID userId);
+    List<Comment> findByUserId(Long userId);
 }
 

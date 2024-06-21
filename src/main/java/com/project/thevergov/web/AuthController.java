@@ -1,11 +1,11 @@
 package com.project.thevergov.web;
 
 
-import com.project.thevergov.model.dto.ApiErrorResponse;
-import com.project.thevergov.model.dto.LoginRequest;
-import com.project.thevergov.model.dto.LoginResponse;
-import com.project.thevergov.model.dto.SignupRequest;
-import com.project.thevergov.model.entity.User;
+import com.project.thevergov.domain.dto.ApiErrorResponse;
+import com.project.thevergov.domain.dto.LoginRequest;
+import com.project.thevergov.domain.dto.LoginResponse;
+import com.project.thevergov.domain.dto.SignupRequest;
+import com.project.thevergov.entity.UserEntity;
 import com.project.thevergov.service.LoginService;
 import com.project.thevergov.service.UserService;
 
@@ -32,9 +32,9 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new ApiErrorResponse(400, result.getAllErrors().get(0).getDefaultMessage()));
         }
         try {
-            User signedupUser = userService.signup(request);
+            UserEntity signedupUserEntity = userService.signup(request);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(signedupUser);
+            return ResponseEntity.status(HttpStatus.CREATED).body(signedupUserEntity);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiErrorResponse(400, e.getMessage()));
         }
@@ -43,8 +43,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, BindingResult result) {
-
-        //TODO implement logic to check for header of authentication - for JWT and handle it differently
 
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body(new ApiErrorResponse(400, result.getAllErrors().get(0).getDefaultMessage()));

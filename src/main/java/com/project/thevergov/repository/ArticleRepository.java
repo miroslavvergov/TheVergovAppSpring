@@ -1,13 +1,12 @@
 package com.project.thevergov.repository;
 
-import com.project.thevergov.model.entity.Article;
-import com.project.thevergov.model.enums.Category;
+import com.project.thevergov.entity.Article;
+import com.project.thevergov.enumeration.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Repository interface for {@link Article} entity.
@@ -23,7 +22,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
      * @param authorId the ID of the author
      * @return a list of articles written by the specified author
      */
-    List<Article> findByAuthorId(UUID authorId);
+    List<Article> findByAuthorId(Long authorId);
 
     Page<Article> findByCategoriesIn(Set<Category> categories, Pageable pageable);
 }

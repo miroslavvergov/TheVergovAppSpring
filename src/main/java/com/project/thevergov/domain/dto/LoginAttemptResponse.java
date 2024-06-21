@@ -1,6 +1,6 @@
-package com.project.thevergov.model.dto;
+package com.project.thevergov.domain.dto;
 
-import com.project.thevergov.model.entity.LoginAttempt;
+import com.project.thevergov.entity.LoginAttempt;
 
 import java.time.LocalDateTime;
 
