@@ -49,10 +49,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User signup(SignupRequest request) {
         String email = request.getEmail();
-        Optional<User> existingUser = userRepository.findByUsername(email);
+        String username = request.getUsername();
 
-        if (existingUser.isPresent()) {
+        Optional<User> existingUserForEmail = userRepository.findByEmail(email);
+        Optional<User> existingUserForUsername = userRepository.findByUsername(username);
+
+
+        if (existingUserForEmail.isPresent()) {
             throw new DuplicateException(String.format("User with the email address '%s' already exists.", email));
+        } else if (existingUserForUsername.isPresent()) {
+            throw new DuplicateException(String.format("User with the username '%s' already exists.", username));
         }
 
         User user = modelMapper.map(request, User.class);
@@ -65,7 +71,6 @@ public class UserServiceImpl implements UserService {
         LocalDateTime creationTime = LocalDateTime.now();
         user.setCreatedAt(creationTime);
         user.setUpdatedAt(creationTime);
-
 
         return userRepository.save(user);
     }

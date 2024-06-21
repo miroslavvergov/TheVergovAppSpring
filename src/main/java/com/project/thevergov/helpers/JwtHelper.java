@@ -1,6 +1,7 @@
 package com.project.thevergov.helpers;
 
 import com.project.thevergov.exception.AccessDeniedException;
+import com.project.thevergov.model.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -18,20 +19,29 @@ public class JwtHelper {
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final int MINUTES = 60;
 
-    public static String generateToken(String email) {
+    public static String generateToken(String email, Role role) {
         var now = Instant.now();
         return Jwts.builder()
                 .subject(email)
+                .claim("role", role.name())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(MINUTES, ChronoUnit.MINUTES)))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
+       // return Jwts.builder()
+       //         .subject(email)
+       //         .issuedAt(Date.from(now))
+       //         .expiration(Date.from(now.plus(MINUTES, ChronoUnit.MINUTES)))
+       //         .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+       //         .compact();
     }
 
     public static String extractUsername(String token) {
         return getTokenBody(token).getSubject();
     }
 
+
+    //TODO
     public static Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
@@ -53,5 +63,10 @@ public class JwtHelper {
     private static boolean isTokenExpired(String token) {
         Claims claims = getTokenBody(token);
         return claims.getExpiration().before(new Date());
+    }
+
+    public static Role extractRole(String token) {
+        String role = getTokenBody(token).get("role", String.class);
+        return Role.valueOf(role);
     }
 }

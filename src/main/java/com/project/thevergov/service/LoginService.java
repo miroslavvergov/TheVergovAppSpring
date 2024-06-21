@@ -12,5 +12,5 @@ public interface LoginService {
 
     List<LoginAttempt> findRecentLoginAttempts(String email);
 
-    LoginResponse login(LoginRequest loginRequest);
+    LoginResponse loginWithoutHeader(LoginRequest loginRequest);
 }

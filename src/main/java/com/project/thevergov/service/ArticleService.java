@@ -1,7 +1,7 @@
 package com.project.thevergov.service;
 
-import com.project.thevergov.model.dto.ArticleResponseDTO;
-import com.project.thevergov.model.dto.CreationArticleDTO;
+import com.project.thevergov.model.dto.ArticleResponse;
+import com.project.thevergov.model.dto.ArticleCreation;
 import com.project.thevergov.model.entity.Article;
 import com.project.thevergov.model.enums.Category;
 
@@ -20,16 +20,16 @@ import java.util.UUID;
  * the business logic for these operations.
  */
 public interface ArticleService {
-    Article createArticle(CreationArticleDTO articleDTO);
-    Optional<ArticleResponseDTO> getArticleById(Long id);
-    List<ArticleResponseDTO> getArticlesByAuthorId(UUID authorId);
+    Article createArticle(ArticleCreation articleDTO);
+    Optional<ArticleResponse> getArticleById(Long id);
+    List<ArticleResponse> getArticlesByAuthorId(UUID authorId);
     void deleteArticle(Long id);
 
     // Method to get pageable articles sorted by date of creation
-    Page<ArticleResponseDTO> getAllArticlesSortByDate(int page, int size);
+    Page<ArticleResponse> getAllArticlesSortByDate(int page, int size);
 
     // Method to get pageable articles by category
-    Page<ArticleResponseDTO> getAllArticlesByCategory(Set<Category> categories, int page, int size);
+    Page<ArticleResponse> getAllArticlesByCategory(Set<Category> categories, int page, int size);
 }
 
 

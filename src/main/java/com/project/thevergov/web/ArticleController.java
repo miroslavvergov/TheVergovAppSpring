@@ -1,13 +1,18 @@
 package com.project.thevergov.web;
 
-import com.project.thevergov.model.dto.ArticleResponseDTO;
-import com.project.thevergov.model.dto.CreationArticleDTO;
+import com.project.thevergov.model.dto.ArticleResponse;
+import com.project.thevergov.model.dto.ArticleCreation;
 import com.project.thevergov.model.entity.Article;
 import com.project.thevergov.model.enums.Category;
 import com.project.thevergov.service.ArticleService;
 import com.project.thevergov.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,8 +42,12 @@ public class ArticleController {
      * @return the created article
      */
     @PostMapping
-    public Article createArticle(@RequestBody CreationArticleDTO creationArticleDTO) {
-        return articleService.createArticle(creationArticleDTO);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> createArticle(@Valid @RequestBody ArticleCreation creationArticleDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(result.getAllErrors().get(0).getDefaultMessage());
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(articleService.createArticle(creationArticleDTO));
     }
 
     /**
@@ -48,7 +57,7 @@ public class ArticleController {
      * @return the article
      */
     @GetMapping("/{id}")
-    public Optional<ArticleResponseDTO> getArticleById(@PathVariable Long id) {
+    public Optional<ArticleResponse> getArticleById(@PathVariable Long id) {
         return articleService.getArticleById(id);
     }
 
@@ -59,7 +68,7 @@ public class ArticleController {
      * @return the list of articles by the author
      */
     @GetMapping("/author/{authorId}")
-    public List<ArticleResponseDTO> getArticlesByAuthorId(@PathVariable UUID authorId) {
+    public List<ArticleResponse> getArticlesByAuthorId(@PathVariable UUID authorId) {
         return articleService.getArticlesByAuthorId(authorId);
     }
 
@@ -81,8 +90,8 @@ public class ArticleController {
      * @return a page of articles sorted by creation date
      */
     @GetMapping
-    public Page<ArticleResponseDTO> getArticles(@RequestParam(defaultValue = "0") int page,
-                                     @RequestParam(defaultValue = "10") int size) {
+    public Page<ArticleResponse> getArticles(@RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "10") int size) {
         return articleService.getAllArticlesSortByDate(page, size);
     }
 
@@ -95,9 +104,9 @@ public class ArticleController {
      * @return a page of articles filtered by the specified categories
      */
     @GetMapping("/by-category")
-    public Page<ArticleResponseDTO> getArticlesByCategory(@RequestParam Set<Category> categories,
-                                               @RequestParam(defaultValue = "0") int page,
-                                               @RequestParam(defaultValue = "10") int size) {
+    public Page<ArticleResponse> getArticlesByCategory(@RequestParam Set<Category> categories,
+                                                       @RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "10") int size) {
         return articleService.getAllArticlesByCategory(categories, page, size);
     }
 }

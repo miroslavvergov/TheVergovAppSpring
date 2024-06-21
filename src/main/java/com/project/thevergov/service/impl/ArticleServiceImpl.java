@@ -1,7 +1,7 @@
 package com.project.thevergov.service.impl;
 
-import com.project.thevergov.model.dto.ArticleResponseDTO;
-import com.project.thevergov.model.dto.CreationArticleDTO;
+import com.project.thevergov.model.dto.ArticleResponse;
+import com.project.thevergov.model.dto.ArticleCreation;
 import com.project.thevergov.model.entity.Article;
 import com.project.thevergov.model.entity.User;
 import com.project.thevergov.model.enums.Category;
@@ -10,7 +10,6 @@ import com.project.thevergov.service.ArticleService;
 import com.project.thevergov.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -49,9 +48,9 @@ public class ArticleServiceImpl implements ArticleService {
      */
     @Override
     @Transactional
-    public Article createArticle(CreationArticleDTO articleDTO) {
+    public Article createArticle(ArticleCreation articleDTO) {
         // Retrieve the author by ID
-        Optional<User> authorOptional = userService.getUserById(articleDTO.getAuthorId());
+        Optional<User> authorOptional = userService.getUserByEmail(articleDTO.getAuthorEmail());
         if (!authorOptional.isPresent()) {
             throw new IllegalArgumentException("Author not found");
         }
@@ -68,16 +67,16 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<ArticleResponseDTO> getArticleById(Long id) {
-        return articleRepository.findById(id).map(article -> modelMapper.map(article, ArticleResponseDTO.class));
+    public Optional<ArticleResponse> getArticleById(Long id) {
+        return articleRepository.findById(id).map(article -> modelMapper.map(article, ArticleResponse.class));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ArticleResponseDTO> getArticlesByAuthorId(UUID authorId) {
+    public List<ArticleResponse> getArticlesByAuthorId(UUID authorId) {
         List<Article> articles = articleRepository.findByAuthorId(authorId);
         return articles.stream()
-                .map(article -> modelMapper.map(article, ArticleResponseDTO.class))
+                .map(article -> modelMapper.map(article, ArticleResponse.class))
                 .collect(Collectors.toList());
     }
 
@@ -89,20 +88,20 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ArticleResponseDTO> getAllArticlesSortByDate(int page, int size) {
+    public Page<ArticleResponse> getAllArticlesSortByDate(int page, int size) {
         Page<Article> articlesPage = articleRepository.findAll(PageRequest.of(page, size, Sort.by("createdDate")));
-        List<ArticleResponseDTO> articlesDTOs = articlesPage.getContent().stream()
-                .map(article -> modelMapper.map(article, ArticleResponseDTO.class))
+        List<ArticleResponse> articlesDTOs = articlesPage.getContent().stream()
+                .map(article -> modelMapper.map(article, ArticleResponse.class))
                 .collect(Collectors.toList());
         return new PageImpl<>(articlesDTOs, articlesPage.getPageable(), articlesPage.getTotalElements());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ArticleResponseDTO> getAllArticlesByCategory(Set<Category> categories, int page, int size) {
+    public Page<ArticleResponse> getAllArticlesByCategory(Set<Category> categories, int page, int size) {
         Page<Article> articlesPage = articleRepository.findByCategoriesIn(categories, PageRequest.of(page, size, Sort.by("createdDate")));
-        List<ArticleResponseDTO> articlesDTOs = articlesPage.getContent().stream()
-                .map(article -> modelMapper.map(article, ArticleResponseDTO.class))
+        List<ArticleResponse> articlesDTOs = articlesPage.getContent().stream()
+                .map(article -> modelMapper.map(article, ArticleResponse.class))
                 .collect(Collectors.toList());
         return new PageImpl<>(articlesDTOs, articlesPage.getPageable(), articlesPage.getTotalElements());
     }

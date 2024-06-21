@@ -39,7 +39,7 @@ public class SecurityConfig {
 //            our public endpoints
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/authentication-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/articles/**").hasRole("ADMIN")
 //            our private endpoints
                         .anyRequest().authenticated())
                 .authenticationManager(authenticationManager)
