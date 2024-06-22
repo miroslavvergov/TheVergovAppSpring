@@ -5,6 +5,6 @@ public enum Category {
     FINANCES,
     WISDOM,
     FITNESS,
-    HEALTH
+    HEALTH,
 }
 

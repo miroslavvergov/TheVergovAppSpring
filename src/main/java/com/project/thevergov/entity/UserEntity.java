@@ -28,9 +28,10 @@ import static jakarta.persistence.FetchType.*;
 @JsonInclude(NON_DEFAULT)
 public class UserEntity extends Auditable {
 
-    @Column(updatable = false, unique = true, nullable = false)
-    private String userId;
 
+
+    @Column(name = "user_id",updatable = false, unique = true, nullable = false)
+    private String userId;
 
     private String firstName;
 

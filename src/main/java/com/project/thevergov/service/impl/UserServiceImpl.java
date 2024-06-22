@@ -53,7 +53,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createUser(String firstName, String lastName, String username, String email, String password) {
 
-        var userEntity = userRepository.save(createNewUser(firstName, lastName, email));
+        UserEntity newUser = createNewUser(firstName, lastName, username, email);
+
+        var userEntity = userRepository.save(newUser);
 
         var credentialEntity = new CredentialEntity(userEntity, password);
         credentialRepository.save(credentialEntity);
@@ -66,15 +68,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public RoleEntity getRoleName(String name) {
-        var role = roleRepository.findByNameIgnoreCase(name);
+        var role = roleRepository.findRoleEntityByName(name);
+
 
         return role.orElseThrow(() -> new ApiException("Role not found"));
     }
 
-    private UserEntity createNewUser(String firstName, String lastName, String email) {
+    private UserEntity createNewUser(String firstName, String lastName, String username, String email) {
         var role = getRoleName(Authority.USER.name());
 
-        return createUserEntity(firstName, lastName, email, role);
+        return createUserEntity(firstName, lastName, username, email, role);
 
     }
 }

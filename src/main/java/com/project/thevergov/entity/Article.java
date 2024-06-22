@@ -1,8 +1,7 @@
 package com.project.thevergov.entity;
 
 import com.project.thevergov.enumeration.Category;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -10,35 +9,31 @@ import java.util.Set;
 
 /**
  * Entity representing an article in the application.
- *
+ * <p>
  * The Article entity includes details such as title, content, author, and metadata.
  * A category is also included to classify the article.
  */
-@Entity
-@Table(name = "articles")
 @Getter
 @Setter
-public class Article {
+@ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "articles")
+public class Article extends Auditable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "article_id",updatable = false, unique = true, nullable = false)
+    private String articleId;
 
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "text", nullable = false)
     private String content;
 
-    @Column(nullable = false, name = "created_at")
-    private LocalDateTime createdDate;
-
-    @Column(nullable = false, name = "updated_at")
-    private LocalDateTime updatedDate;
-
-    @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
-    private UserEntity author;
+    @Column(columnDefinition = "text", nullable = false)
+    private String icon;
 
     @ElementCollection(targetClass = Category.class)
     @Enumerated(EnumType.STRING)

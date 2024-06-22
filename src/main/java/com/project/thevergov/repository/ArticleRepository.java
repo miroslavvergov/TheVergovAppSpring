@@ -16,15 +16,7 @@ import java.util.Set;
  */
 public interface ArticleRepository extends JpaRepository<Article, Long> {
 
-    /**
-     * Finds articles by the ID of the author.
-     *
-     * @param authorId the ID of the author
-     * @return a list of articles written by the specified author
-     */
-    List<Article> findByAuthorId(Long authorId);
 
-    Page<Article> findByCategoriesIn(Set<Category> categories, Pageable pageable);
 }
 
 

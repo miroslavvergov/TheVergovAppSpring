@@ -34,13 +34,35 @@ public abstract class Auditable {
     // Unique Reference ID (alternative to UUID)
     private String referenceId = new AlternativeJdkIdGenerator().generateId().toString();
 
+
+    //TODO
+    //we need to use the schema to produce foreign keys
     // Mandatory Fields for Tracking User Actions
-    @NotNull private Long createdBy;
-    @NotNull private Long updatedBy;
+    @NotNull
+    private Long createdBy;
+    @NotNull
+    private Long updatedBy;
+
+    //if you want to achieve a program in which you insert the foreign key through jpa additional classes would be needed
+  //  // Foreign Keys for createdBy and updatedBy
+  //  @ManyToOne
+  //  @JoinColumn(name = "creator_id",
+  //          referencedColumnName = "id",
+  //          foreignKey = @ForeignKey(name = "fk_user_creator", value = ConstraintMode.CONSTRAINT))
+  //  private UserEntity creator;
+  //  @ManyToOne
+  //  @JoinColumn(name = "updater_id",
+  //          referencedColumnName = "id",
+  //          foreignKey = @ForeignKey(name = "fk_user_updater", value = ConstraintMode.CONSTRAINT))
+  //  private UserEntity updater;
+
+
 
     // Timestamps for Creation and Last Update
-    @NotNull @CreatedDate @Column(name = "created_at", nullable = false, updatable = false) private LocalDateTime createdAt;
-    @CreatedDate @Column(name = "updated_at", nullable = false) private LocalDateTime updatedAt;
+    @NotNull @CreatedDate @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+    @CreatedDate @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     /**
      * beforePersist: JPA lifecycle callback executed before saving a new entity.
@@ -49,11 +71,13 @@ public abstract class Auditable {
      */
     @PrePersist
     public void beforePersist() {
-        var userId = RequestContext.getUserId();
+        var userId = 0L; //RequestContext.getUserId();
 
-        if (userId == null) {
-            throw new ApiException("Cannot persist entity without user ID in RequestContext for this thread");
-        }
+       // if (userId == null) {
+       //     throw new ApiException("Cannot persist entity without user ID in RequestContext for this thread");
+       // }
+        var user = new UserEntity();
+        user.setId(userId);
 
         setCreatedAt(now());
         setCreatedBy(userId);
@@ -68,11 +92,13 @@ public abstract class Auditable {
      */
     @PreUpdate
     public void beforeUpdate() {
-        var userId = RequestContext.getUserId();
+        var userId = 0L; //RequestContext.getUserId();
 
-        if (userId == null) {
-            throw new ApiException("Cannot update entity without user ID in RequestContext for this thread");
-        }
+      //if (userId == null) {
+      //    throw new ApiException("Cannot update entity without user ID in RequestContext for this thread");
+      //}
+        var user = new UserEntity();
+        user.setId(userId);
 
         setUpdatedBy(userId);
         setUpdatedAt(now());

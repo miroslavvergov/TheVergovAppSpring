@@ -23,6 +23,7 @@ public class UserRequest {
     private String email;
     @NotEmpty(message = "Password cannot be empty or null")
     private String password;
+
     private String bio;
 
 }

@@ -13,5 +13,5 @@ ACTIVE_PROFILE: dev
 EMAIL_HOST: smtp.gmail.com
 EMAIL_PORT: 587
 EMAIL_ID: vergovmiroslav@gmail.com
-EMAIL_PASSWORD: Xn978541
+EMAIL_PASSWORD:
 VERIFY_EMAIL_HOST: http://localhost:8080
