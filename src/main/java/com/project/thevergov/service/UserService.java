@@ -1,6 +1,7 @@
 package com.project.thevergov.service;
 
 import com.project.thevergov.entity.RoleEntity;
+import com.project.thevergov.enumeration.LoginType;
 
 /**
  * Service interface for managing users in the application.
@@ -15,4 +16,7 @@ public interface UserService {
 
     RoleEntity getRoleName(String name);
 
+    void verifyAccount(String key);
+
+    void updateLoginAttempt(String email, LoginType loginType);
 }

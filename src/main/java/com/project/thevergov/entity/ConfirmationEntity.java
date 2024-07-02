@@ -23,8 +23,9 @@ import static jakarta.persistence.FetchType.EAGER;
 public class ConfirmationEntity extends Auditable {
 
 
-    //TODO fix key persistence to DB
-    private String uuidKey;
+    //we name it tokenKey because we get an exception in the other situation
+    @Column(name = "token_key")
+    private String tokenKey;
 
     // One-to-One Relationship with UserEntity
     @OneToOne(targetEntity = UserEntity.class, fetch = EAGER) // Eagerly fetch the UserEntity
@@ -44,6 +45,6 @@ public class ConfirmationEntity extends Auditable {
      */
     public ConfirmationEntity(UserEntity userEntity) {
         this.userEntity = userEntity;
-        this.uuidKey = UUID.randomUUID().toString();
+        this.tokenKey = UUID.randomUUID().toString();
     }
 }

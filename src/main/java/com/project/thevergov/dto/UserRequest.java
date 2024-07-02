@@ -1,4 +1,4 @@
-package com.project.thevergov.domain.dto;
+package com.project.thevergov.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

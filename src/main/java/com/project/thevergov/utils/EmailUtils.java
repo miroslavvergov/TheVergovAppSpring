@@ -10,25 +10,25 @@ public class EmailUtils {
      *
      * @param name  The user's name
      * @param host  The host for the verification link
-     * @param token The verification token
+     * @param key The verification key
      * @return The formatted email message
      */
-    public static String getEmailMessage(String name, String host, String token) {
+    public static String getEmailMessage(String name, String host, String key) {
         return "Hello "
                 + name
                 + ",\n\n Your new account has been created. Please click on the link below to verify your account.\n\n"
-                + getVerificationUrl(host, token) + "\n\nThe Support Team";
+                + getVerificationUrl(host, key) + "\n\nThe Support Team";
     }
 
     /**
      * getVerificationUrl: Constructs the verification URL.
      *
      * @param host  The host for the verification link
-     * @param token The verification token
+     * @param key The verification key
      * @return The verification URL
      */
-    public static String getVerificationUrl(String host, String token) {
-        return host + "/verify/account?token=" + token;
+    public static String getVerificationUrl(String host, String key) {
+        return host + "/verify/account?token=" + key;
     }
 
     /**
@@ -36,24 +36,24 @@ public class EmailUtils {
      *
      * @param name  The user's name
      * @param host  The host for the password reset link
-     * @param token The password reset token
+     * @param key The password reset key
      * @return The formatted email message
      */
-    public static String getResetPasswordMessage(String name, String host, String token) {
+    public static String getResetPasswordMessage(String name, String host, String key) {
         return "Hello "
                 + name
                 + ",\n\n You have initiated a password reset. Please click on the link below to reset your password.\n\n"
-                + getResetPasswordUrl(host, token) + "\n\nThe Support Team";
+                + getResetPasswordUrl(host, key) + "\n\nThe Support Team";
     }
 
     /**
      * getResetPasswordUrl: Constructs the password reset URL.
      *
      * @param host  The host for the password reset link
-     * @param token The password reset token
+     * @param key The password reset key
      * @return The password reset URL
      */
-    public static String getResetPasswordUrl(String host, String token) {
-        return host + "/verify/password?token=" + token;
+    public static String getResetPasswordUrl(String host, String key) {
+        return host + "/verify/password?key=" + key;
     }
 }

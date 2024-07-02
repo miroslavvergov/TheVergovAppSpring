@@ -35,18 +35,4 @@ VALUES (0,
         false,
         false);
 
-#-- First, insert the user if not already present
-#INSERT INTO users (id, user_id, first_name, last_name, email, created_by, updated_by, created_at,updated_at)
-#VALUES (1, 'user123', 'John', 'Doe', 'john.doe@example.com', 1, 1, '2024-06-22 10:13:19.634806', '2024-06-22 10:13:19.634806')
-#ON DUPLICATE KEY UPDATE first_name = 'John',
-#                        last_name  = 'Doe',
-#                        email      = 'john.doe@example.com',
-#                        created_by = 1,
-#                        updated_by = 1
-#;
-#
-#-- Then, insert into confirmations table
-#INSERT INTO confirmations (uuidKey, user_id, created_by, updated_by)
-#VALUES ('some-uuid-key', 1, 1, 1);
-
 COMMIT;

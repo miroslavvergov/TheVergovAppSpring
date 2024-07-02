@@ -1,12 +1,15 @@
 package com.project.thevergov.service.impl;
 
 
+import com.project.thevergov.cache.CacheStore;
+import com.project.thevergov.domain.RequestContext;
 import com.project.thevergov.entity.ConfirmationEntity;
 import com.project.thevergov.entity.CredentialEntity;
 import com.project.thevergov.entity.RoleEntity;
 import com.project.thevergov.entity.UserEntity;
 import com.project.thevergov.enumeration.Authority;
 import com.project.thevergov.enumeration.EventType;
+import com.project.thevergov.enumeration.LoginType;
 import com.project.thevergov.event.UserEvent;
 import com.project.thevergov.exception.ApiException;
 import com.project.thevergov.repository.ConfirmationRepository;
@@ -20,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static com.project.thevergov.utils.UserUtils.createUserEntity;
@@ -48,6 +52,8 @@ public class UserServiceImpl implements UserService {
 
     //private final BCryptPasswordEncoder encoder;
 
+    private final CacheStore<String, Integer> userCache;
+
     private final ApplicationEventPublisher publisher;
 
     @Override
@@ -63,7 +69,7 @@ public class UserServiceImpl implements UserService {
         var confirmationEntity = new ConfirmationEntity(userEntity);
         confirmationRepository.save(confirmationEntity);
 
-        publisher.publishEvent(new UserEvent(userEntity, EventType.REGISTRATION, Map.of("key", confirmationEntity.getUuidKey())));
+        publisher.publishEvent(new UserEvent(userEntity, EventType.REGISTRATION, Map.of("key", confirmationEntity.getTokenKey())));
     }
 
     @Override
@@ -72,6 +78,53 @@ public class UserServiceImpl implements UserService {
 
 
         return role.orElseThrow(() -> new ApiException("Role not found"));
+    }
+
+    @Override
+    public void verifyAccount(String key) {
+        var confirmationEntity = getUserConfirmation(key);
+        UserEntity userEntity = getUserEntityByEmail(confirmationEntity.getUserEntity().getEmail());
+        userEntity.setEnabled(true);
+        userRepository.save(userEntity);
+        confirmationRepository.delete(confirmationEntity);
+    }
+
+    @Override
+    public void updateLoginAttempt(String email, LoginType loginType) {
+        var userEntity = getUserEntityByEmail(email);
+        RequestContext.setUserId(userEntity.getId());
+        switch (loginType) {
+            case LOGIN_ATTEMPT -> {
+                if (userCache.get(userEntity.getEmail()) == null) {
+                    userEntity.setLoginAttempts(0);
+                    userEntity.setAccountNonLocked(true);
+                }
+                userEntity.setLoginAttempts(userEntity.getLoginAttempts() + 1);
+                userCache.put(userEntity.getEmail(), userEntity.getLoginAttempts());
+                if (userCache.get(userEntity.getEmail()) > 5) {
+                    userEntity.setAccountNonLocked(false);
+                }
+            }
+            case LOGIN_SUCCESS -> {
+                userEntity.setAccountNonLocked(true);
+                userEntity.setLoginAttempts(0);
+                userEntity.setLastLogin(LocalDateTime.now());
+                userCache.evict(userEntity.getEmail());
+            }
+        }
+        userRepository.save(userEntity);
+
+
+    }
+
+
+    private UserEntity getUserEntityByEmail(String email) {
+        var userByEmail = userRepository.findByEmailIgnoreCase(email);
+        return userByEmail.orElseThrow(() -> new ApiException("Confirmation key not found"));
+    }
+
+    private ConfirmationEntity getUserConfirmation(String key) {
+        return confirmationRepository.findByTokenKey(key).orElse(null);
     }
 
     private UserEntity createNewUser(String firstName, String lastName, String username, String email) {
