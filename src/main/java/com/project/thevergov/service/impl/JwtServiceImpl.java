@@ -141,7 +141,7 @@ public class JwtServiceImpl extends JwtConfiguration implements JwtService {
     /**
      * Creates a JWT token for the given user and token function.
      *
-     * @param user         The user for whom the token is created.
+     * @param user          The user for whom the token is created.
      * @param tokenFunction The function to retrieve the token type (access or refresh).
      * @return The created JWT token as a String.
      */
@@ -178,9 +178,9 @@ public class JwtServiceImpl extends JwtConfiguration implements JwtService {
     /**
      * Retrieves token data from JWT token using the provided token function.
      *
-     * @param token        The JWT token as a String.
+     * @param token         The JWT token as a String.
      * @param tokenFunction The function to retrieve specific token data.
-     * @param <T>          The type of token data to retrieve.
+     * @param <T>           The type of token data to retrieve.
      * @return The token data as retrieved by the tokenFunction.
      */
     @Override
@@ -193,6 +193,17 @@ public class JwtServiceImpl extends JwtConfiguration implements JwtService {
                         .user(userService.getUserByUserId(subject.apply(token))) //TODO: Complete the user retrieval
                         .build()
         );
+    }
+
+    @Override
+    public void removeCookie(HttpServletRequest request, HttpServletResponse response, String cookieName) {
+        var optionalCookie = extractCookie.apply(request, cookieName);
+
+        if (optionalCookie.isPresent()) {
+            var cookie = optionalCookie.get();
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+        }
     }
 
     // Private method to retrieve specific claim value from JWT token

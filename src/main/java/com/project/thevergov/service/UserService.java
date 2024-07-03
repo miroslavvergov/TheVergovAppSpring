@@ -1,6 +1,7 @@
 package com.project.thevergov.service;
 
 import com.project.thevergov.dto.User;
+import com.project.thevergov.entity.CredentialEntity;
 import com.project.thevergov.entity.RoleEntity;
 import com.project.thevergov.enumeration.LoginType;
 
@@ -22,4 +23,8 @@ public interface UserService {
     void updateLoginAttempt(String email, LoginType loginType);
 
     User getUserByUserId(String userId);
+
+    User getUserByEmail(String email);
+
+    CredentialEntity getUserCredentialById(Long id);
 }

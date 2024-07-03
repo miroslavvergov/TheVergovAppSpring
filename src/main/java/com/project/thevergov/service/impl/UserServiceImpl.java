@@ -18,6 +18,7 @@ import com.project.thevergov.repository.CredentialRepository;
 import com.project.thevergov.repository.RoleRepository;
 import com.project.thevergov.repository.UserRepository;
 import com.project.thevergov.service.UserService;
+import com.project.thevergov.utils.UserUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.project.thevergov.utils.UserUtils.createUserEntity;
+import static com.project.thevergov.utils.UserUtils.fromUserEntity;
 
 
 /**
@@ -124,15 +126,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUserId(String userId) {
-        Optional<UserEntity> userByUserId = userRepository.findUserByUserId(userId);
-        if (userByUserId.get() == null) {
-            //TODO
-            return null;
-        }
+        var userEntity = userRepository.findUserByUserId(userId).orElseThrow(() -> new ApiException("User not found"));
+        return fromUserEntity(userEntity, userEntity.getRole(), getUserCredentialById(userEntity.getId()));
+    }
 
-        User user = modelMapper.map(userByUserId.get(), User.class);
+    @Override
+    public User getUserByEmail(String email) {
+        UserEntity userEntity = getUserEntityByEmail(email);
+        return fromUserEntity(userEntity, userEntity.getRole(), getUserCredentialById(userEntity.getId()));
+    }
 
-        return user;
+
+    @Override
+    public CredentialEntity getUserCredentialById(Long userId) {
+        var credentialById = credentialRepository.getCredentialByUserEntityId(userId);
+
+        return credentialById.orElseThrow(() -> new ApiException("Unable to find user credential"));
     }
 
 
