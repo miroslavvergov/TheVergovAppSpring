@@ -1,6 +1,6 @@
 package com.project.thevergov.enumeration;
 
-import static com.project.thevergov.constant.RoleConstants.*;
+import static com.project.thevergov.constant.Constants.*;
 
 public enum Authority {
     USER(USER_AUTHORITIES),

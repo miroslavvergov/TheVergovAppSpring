@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.thevergov.domain.VergovAuthentication;
 import com.project.thevergov.dto.LoginRequest;
 import com.project.thevergov.enumeration.LoginType;
+import com.project.thevergov.service.JwtService;
 import com.project.thevergov.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,6 +22,7 @@ import java.io.IOException;
 
 import static com.fasterxml.jackson.core.JsonParser.Feature.*;
 import static com.project.thevergov.domain.VergovAuthentication.unauthenticated;
+import static com.project.thevergov.utils.RequestUtils.handleErrorResponse;
 import static org.springframework.http.HttpMethod.POST;
 
 @Slf4j
@@ -51,9 +53,9 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
             return getAuthenticationManager().authenticate(authentication);
         } catch (Exception e) {
             log.error(e.getMessage());
-            // handleErrorResponse(request, response, exception);
+            handleErrorResponse(request, response, e);
+            return null;
         }
-        return null;
     }
 
     @Override
