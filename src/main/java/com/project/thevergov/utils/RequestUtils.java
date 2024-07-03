@@ -1,5 +1,7 @@
+/**
+ * Utility class for handling HTTP requests and responses within the application.
+ */
 package com.project.thevergov.utils;
-
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.thevergov.domain.Response;
@@ -24,8 +26,14 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/**
+ * Utility methods for handling HTTP request and response operations.
+ */
 public class RequestUtils {
 
+    /**
+     * Writes a JSON response to the HttpServletResponse.
+     */
     private static final BiConsumer<HttpServletResponse, Response> writeResponse =
             ((httpServletResponse, response) -> {
                 try {
@@ -37,6 +45,9 @@ public class RequestUtils {
                 }
             });
 
+    /**
+     * Determines the reason for an error based on the exception and HTTP status.
+     */
     private static final BiFunction<Exception, HttpStatus, String> errorReason = ((exception, httpStatus) -> {
         if (httpStatus.isSameCodeAs(FORBIDDEN)) {
             return "You do not have enough permission";
@@ -60,18 +71,43 @@ public class RequestUtils {
         }
     });
 
+    /**
+     * Constructs a Response object for a given request with provided data, message, and status.
+     *
+     * @param request The HttpServletRequest object.
+     * @param data    The data to include in the response.
+     * @param message The message to include in the response.
+     * @param status  The HTTP status of the response.
+     * @return A Response object representing the HTTP response.
+     */
     public static Response getResponse(HttpServletRequest request, Map<?, ?> data, String message, HttpStatus status) {
         return new Response(now().toString(), status.value(), request.getRequestURI(), HttpStatus.valueOf(status.value()), message, EMPTY, data);
     }
 
+    /**
+     * Handles and writes an error response to the HttpServletResponse based on the exception type.
+     *
+     * @param request   The HttpServletRequest object.
+     * @param response  The HttpServletResponse object.
+     * @param exception The exception that occurred.
+     */
     public static void handleErrorResponse(HttpServletRequest request, HttpServletResponse response, Exception exception) {
         if (exception instanceof AccessDeniedException) {
             Response apiResponse = getErrorResponse(request, response, exception, FORBIDDEN);
             writeResponse.accept(response, apiResponse);
-
         }
+        // Add additional handlers for other exceptions if needed
     }
 
+    /**
+     * Constructs an error Response object for a given request and exception with the specified HTTP status.
+     *
+     * @param request   The HttpServletRequest object.
+     * @param response  The HttpServletResponse object.
+     * @param exception The exception that occurred.
+     * @param status    The HTTP status of the error response.
+     * @return A Response object representing the error response.
+     */
     private static Response getErrorResponse(HttpServletRequest request, HttpServletResponse response, Exception exception, HttpStatus status) {
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setStatus(status.value());
@@ -82,7 +118,5 @@ public class RequestUtils {
                 getRootCauseMessage(exception),
                 emptyMap()
         );
-
     }
-
 }
