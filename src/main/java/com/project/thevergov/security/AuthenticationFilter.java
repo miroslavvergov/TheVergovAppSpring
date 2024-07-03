@@ -1,5 +1,9 @@
 package com.project.thevergov.security;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.thevergov.domain.VergovAuthentication;
+import com.project.thevergov.dto.LoginRequest;
 import com.project.thevergov.enumeration.LoginType;
 import com.project.thevergov.service.UserService;
 import jakarta.servlet.FilterChain;
@@ -15,6 +19,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
 
+import static com.fasterxml.jackson.core.JsonParser.Feature.*;
+import static com.project.thevergov.domain.VergovAuthentication.unauthenticated;
 import static org.springframework.http.HttpMethod.POST;
 
 @Slf4j
@@ -38,9 +44,15 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-       userService.updateLoginAttempt("vergovmiroslav@gmail.com", LoginType.LOGIN_ATTEMPT);
-
-
+        try {
+            var user = new ObjectMapper().configure(AUTO_CLOSE_SOURCE, true).readValue(request.getInputStream(), LoginRequest.class);
+            userService.updateLoginAttempt(user.getEmail(), LoginType.LOGIN_ATTEMPT);
+            var authentication = unauthenticated(user.getEmail(), user.getPassword());
+            return getAuthenticationManager().authenticate(authentication);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            // handleErrorResponse(request, response, exception);
+        }
         return null;
     }
 
