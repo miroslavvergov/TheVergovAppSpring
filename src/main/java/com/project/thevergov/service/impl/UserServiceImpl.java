@@ -3,6 +3,7 @@ package com.project.thevergov.service.impl;
 
 import com.project.thevergov.cache.CacheStore;
 import com.project.thevergov.domain.RequestContext;
+import com.project.thevergov.dto.User;
 import com.project.thevergov.entity.ConfirmationEntity;
 import com.project.thevergov.entity.CredentialEntity;
 import com.project.thevergov.entity.RoleEntity;
@@ -20,11 +21,13 @@ import com.project.thevergov.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.project.thevergov.utils.UserUtils.createUserEntity;
 
@@ -55,6 +58,8 @@ public class UserServiceImpl implements UserService {
     private final CacheStore<String, Integer> userCache;
 
     private final ApplicationEventPublisher publisher;
+
+    private final ModelMapper modelMapper;
 
     @Override
     public void createUser(String firstName, String lastName, String username, String email, String password) {
@@ -115,6 +120,19 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userEntity);
 
 
+    }
+
+    @Override
+    public User getUserByUserId(String userId) {
+        Optional<UserEntity> userByUserId = userRepository.findUserByUserId(userId);
+        if (userByUserId.get() == null) {
+            //TODO
+            return null;
+        }
+
+        User user = modelMapper.map(userByUserId.get(), User.class);
+
+        return user;
     }
 
 
