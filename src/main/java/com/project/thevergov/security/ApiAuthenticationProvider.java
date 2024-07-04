@@ -11,12 +11,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-
-import java.time.LocalDateTime;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.project.thevergov.constant.Constants.NINETY_DAYS;
+import static com.project.thevergov.domain.VergovAuthentication.authenticated;
 
 @Component
 @RequiredArgsConstructor
@@ -33,20 +31,16 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
         var user = userService.getUserByEmail(apiAuthentication.getEmail());
         if (user != null) {
             var userCredential = userService.getUserCredentialById(user.getId());
-            if (userCredential.getUpdatedAt().minusDays(NINETY_DAYS).isAfter(LocalDateTime.now())) {
+            if (user.isCredentialsNonExpired()) {
                 throw new ApiException("Credentials are expired. Please reset your password");
             }
             var userPrincipal = new UserPrincipal(user, userCredential);
             validAccount.accept(userPrincipal);
             if (encoder.matches(apiAuthentication.getPassword(), userCredential.getPassword())) {
-                return VergovAuthentication.authenticated(user, userPrincipal.getAuthorities());
-
-            } else {
-                throw new BadCredentialsException("Email and/or password incorrect. Please try again");
-            }
-        } else {
-            throw new ApiException("Unable to authenticate");
+                return authenticated(user, userPrincipal.getAuthorities());
+            } else throw new BadCredentialsException("Email and/or password incorrect. Please try again");
         }
+        throw new ApiException("Unable to authenticate");
     }
 
     private final Function<Authentication, VergovAuthentication> authenticationFunction = authentication -> (VergovAuthentication) authentication;
