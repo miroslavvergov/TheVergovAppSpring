@@ -1,9 +1,7 @@
 package com.project.thevergov.security;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.thevergov.domain.Response;
-import com.project.thevergov.domain.VergovAuthentication;
 import com.project.thevergov.dto.LoginRequest;
 import com.project.thevergov.dto.User;
 import com.project.thevergov.enumeration.LoginType;
@@ -34,13 +32,13 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
-public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class ApiAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private final UserService userService;
 
     private final JwtService jwtService;
 
-    protected AuthenticationFilter(
+    protected ApiAuthenticationFilter(
             AuthenticationManager authenticationManager,
             UserService userService,
             JwtService jwtService) {
