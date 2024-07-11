@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -23,7 +24,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static com.project.thevergov.constant.Constants.OPTIONS_HTTP_METHOD;
 import static com.project.thevergov.constant.Constants.PUBLIC_ROUTES;
 import static com.project.thevergov.domain.VergovAuthentication.authenticated;
 import static com.project.thevergov.enumeration.TokenType.ACCESS;
@@ -83,7 +83,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
      */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        var shouldNotFilter = request.getMethod().equalsIgnoreCase(OPTIONS_HTTP_METHOD) ||
+        var shouldNotFilter = request.getMethod().equalsIgnoreCase(HttpMethod.OPTIONS.name()) ||
                 Arrays.asList(PUBLIC_ROUTES).contains(request.getRequestURI());
 
         if (shouldNotFilter) {

@@ -9,11 +9,14 @@ public class Constants {
 
     public static final int STRENGTH = 12;
 
-    //TODO
-    public static final String[] PUBLIC_ROUTES = {};
+    public static final String PUBLIC_URLS = "/user/login";
+
+    public static final String BASE_PATH = "/**";
+
+    public static final String FILE_NAME = "File-Name";
 
     //TODO
-    public static final String OPTIONS_HTTP_METHOD = "OPTIONS";
+    public static final String[] PUBLIC_ROUTES = {};
 
     public static final String LOGIN_PATH = "/user/login";
     public static final String AUTHORITIES = "authorities";
