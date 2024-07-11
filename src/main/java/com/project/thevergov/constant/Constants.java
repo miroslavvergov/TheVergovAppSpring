@@ -9,7 +9,8 @@ public class Constants {
 
     public static final int STRENGTH = 12;
 
-    public static final String PUBLIC_URLS = "/user/login";
+    //TODO
+    public static final String[] PUBLIC_URLS = {};
 
     public static final String BASE_PATH = "/**";
 

@@ -19,6 +19,12 @@ import com.project.thevergov.repository.RoleRepository;
 import com.project.thevergov.repository.UserRepository;
 import com.project.thevergov.service.UserService;
 import com.project.thevergov.utils.UserUtils;
+import dev.samstevens.totp.code.CodeGenerator;
+import dev.samstevens.totp.code.CodeVerifier;
+import dev.samstevens.totp.code.DefaultCodeGenerator;
+import dev.samstevens.totp.code.DefaultCodeVerifier;
+import dev.samstevens.totp.time.SystemTimeProvider;
+import dev.samstevens.totp.time.TimeProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +36,8 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.project.thevergov.utils.UserUtils.createUserEntity;
-import static com.project.thevergov.utils.UserUtils.fromUserEntity;
+import static com.project.thevergov.utils.UserUtils.*;
+import static org.apache.logging.log4j.util.Strings.EMPTY;
 
 
 /**
@@ -142,6 +148,57 @@ public class UserServiceImpl implements UserService {
         var credentialById = credentialRepository.getCredentialByUserEntityId(userId);
 
         return credentialById.orElseThrow(() -> new ApiException("Unable to find user credential"));
+    }
+
+    @Override
+    public User setupMfa(Long id) {
+        UserEntity userEntity = getUserEntityById(id);
+        var codeSecret = qrCodeSecret.get();
+        userEntity.setQrCodeImageUri(qrCodeImageUri.apply(userEntity.getEmail(), codeSecret));
+        userEntity.setQrCodeSecret(codeSecret);
+        userEntity.setMfa(true);
+        userRepository.save(userEntity);
+        return fromUserEntity(userEntity, userEntity.getRole(), getUserCredentialById(userEntity.getId()));
+
+    }
+
+    private UserEntity getUserEntityById(Long id) {
+        var userById = userRepository.findById(id);
+        return userById.orElseThrow(() -> new ApiException("User not found"));
+    }
+
+    @Override
+    public User cancelMfa(Long id) {
+        UserEntity userEntity = getUserEntityById(id);
+        userEntity.setMfa(false);
+        userEntity.setQrCodeSecret(EMPTY);
+        userEntity.setQrCodeImageUri(EMPTY);
+        userRepository.save(userEntity);
+        return fromUserEntity(userEntity, userEntity.getRole(), getUserCredentialById(userEntity.getId()));
+    }
+
+    @Override
+    public User verifyQrCode(String userId, String qrCode) {
+        UserEntity userEntity = getUserEntityByUserId(userId);
+        verifyCode(qrCode, userEntity.getQrCodeSecret());
+        return fromUserEntity(userEntity, userEntity.getRole(), getUserCredentialById(userEntity.getId()));
+    }
+
+    private UserEntity getUserEntityByUserId(String userId) {
+        var userByUserId = userRepository.findUserByUserId(userId);
+        return userByUserId.orElseThrow(() -> new ApiException("User not found"));
+    }
+
+    private boolean verifyCode(String qrCode, String qrCodeSecret) {
+        TimeProvider timeProvider = new SystemTimeProvider();
+        CodeGenerator codeGenerator = new DefaultCodeGenerator();
+        CodeVerifier codeVerifier = new DefaultCodeVerifier(codeGenerator, timeProvider);
+
+        if (codeVerifier.isValidCode(qrCodeSecret, qrCode)) {
+            return true;
+        } else {
+            throw new ApiException("Invalid QR code. Please try again.");
+        }
     }
 
 

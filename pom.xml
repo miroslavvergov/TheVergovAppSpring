@@ -150,6 +150,11 @@
             <artifactId>maven-shade-plugin</artifactId>
             <version>3.5.0</version>
         </dependency>
+        <dependency>
+            <groupId>dev.samstevens.totp</groupId>
+            <artifactId>totp</artifactId>
+            <version>1.7.1</version>
+        </dependency>
 
     </dependencies>
 
