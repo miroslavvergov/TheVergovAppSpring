@@ -104,6 +104,12 @@ public class UserController {
         return ResponseEntity.ok().body(getResponse(request, Map.of("user", user), "Profile retrieved", OK));
     }
 
+    @PatchMapping("/update")
+    public ResponseEntity<Response> update(@AuthenticationPrincipal User userPrincipal, @RequestBody UserRequest userRequest, HttpServletRequest request) {
+        User user = userService.updateUser(userPrincipal.getUserId(), userRequest.getFirstName(), userRequest.getLastName(), userRequest.getEmail(), userRequest.getBio());
+        return ResponseEntity.ok().body(getResponse(request, Map.of("user", user), "User is updated successfully", OK));
+    }
+
     @PostMapping("/resetpassword")
     public ResponseEntity<Response> resetPassword(
             @RequestBody @Valid EmailRequest emailRequest,

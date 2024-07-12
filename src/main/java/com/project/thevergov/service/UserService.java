@@ -40,4 +40,5 @@ public interface UserService {
 
     void updatePassword(String userId, String newPassword, String confirmNewPassword);
 
+    User updateUser(String userId, String firstName, String lastName, String email, String bio);
 }

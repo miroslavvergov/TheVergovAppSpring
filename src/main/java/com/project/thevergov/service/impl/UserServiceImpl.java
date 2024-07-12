@@ -232,6 +232,17 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public User updateUser(String userId, String firstName, String lastName, String email, String bio) {
+        var userEntity = getUserEntityByUserId(userId);
+        userEntity.setFirstName(firstName);
+        userEntity.setLastName(lastName);
+        userEntity.setEmail(email);
+        userEntity.setBio(bio);
+        userRepository.save(userEntity);
+        return fromUserEntity(userEntity, userEntity.getRole(), getUserCredentialById(userEntity.getId()));
+    }
+
     private UserEntity getUserEntityByUserId(String userId) {
         var userByUserId = userRepository.findUserByUserId(userId);
         return userByUserId.orElseThrow(() -> new ApiException("User not found"));
