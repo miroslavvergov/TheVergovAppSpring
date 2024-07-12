@@ -243,6 +243,13 @@ public class UserServiceImpl implements UserService {
         return fromUserEntity(userEntity, userEntity.getRole(), getUserCredentialById(userEntity.getId()));
     }
 
+    @Override
+    public void updateRole(String userId, String role) {
+        var userEntity = getUserEntityByUserId(userId);
+        userEntity.setRole(getRoleName(role));
+        userRepository.save(userEntity);
+    }
+
     private UserEntity getUserEntityByUserId(String userId) {
         var userByUserId = userRepository.findUserByUserId(userId);
         return userByUserId.orElseThrow(() -> new ApiException("User not found"));
