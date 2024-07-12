@@ -98,6 +98,12 @@ public class UserController {
         return ResponseEntity.ok().body(getResponse(request, emptyMap(), "Account verified.", OK));
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<Response> profile(@AuthenticationPrincipal User userPrincipal, HttpServletRequest request) {
+        User user = userService.getUserByUserId(userPrincipal.getUserId());
+        return ResponseEntity.ok().body(getResponse(request, Map.of("user", user), "Profile retrieved", OK));
+    }
+
     @PostMapping("/resetpassword")
     public ResponseEntity<Response> resetPassword(
             @RequestBody @Valid EmailRequest emailRequest,
