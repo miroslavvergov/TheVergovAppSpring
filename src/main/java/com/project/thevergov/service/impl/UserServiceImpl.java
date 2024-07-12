@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.project.thevergov.utils.UserUtils.*;
+import static com.project.thevergov.validation.UserValidation.verifyAccountStatus;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 
 
@@ -61,7 +63,7 @@ public class UserServiceImpl implements UserService {
 
     private final ConfirmationRepository confirmationRepository;
 
-    //private final BCryptPasswordEncoder encoder;
+    private final BCryptPasswordEncoder encoder;
 
     private final CacheStore<String, Integer> userCache;
 
@@ -184,9 +186,59 @@ public class UserServiceImpl implements UserService {
         return fromUserEntity(userEntity, userEntity.getRole(), getUserCredentialById(userEntity.getId()));
     }
 
+    @Override
+    public void resetPassword(String email) {
+
+        var user = getUserEntityByEmail(email);
+        var confirmation = getUserConfirmation(user);
+        if (confirmation != null) {
+            publisher.publishEvent(new UserEvent(user, EventType.RESETPASSWORD, Map.of("key", confirmation.getTokenKey())));
+
+        } else {
+            var confirmationEntity = new ConfirmationEntity(user);
+            confirmationRepository.save(confirmationEntity);
+            publisher.publishEvent(new UserEvent(user, EventType.RESETPASSWORD, Map.of("key", confirmationEntity.getTokenKey())));
+        }
+
+    }
+
+    @Override
+    public User verifyPasswordKey(String key) {
+        var confirmationEntity = getUserConfirmation(key);
+        if (confirmationEntity == null) {
+            //TODO
+            throw new ApiException("Unable to find key");
+        }
+        var userEntity = getUserEntityByEmail(confirmationEntity.getUserEntity().getEmail());
+        if (userEntity == null) {
+            throw new ApiException("Incorrect token");
+        }
+        verifyAccountStatus(userEntity);
+        confirmationRepository.delete(confirmationEntity);
+        return fromUserEntity(userEntity, userEntity.getRole(), getUserCredentialById(userEntity.getId()));
+    }
+
+    @Override
+    public void updatePassword(String userId, String newPassword, String confirmNewPassword) {
+
+        if (!confirmNewPassword.equals(newPassword)) {
+            throw new ApiException("Passwords don't match. Please try again.");
+        }
+        var user = getUserByUserId(userId);
+
+        var credentials = getUserCredentialById(user.getId());
+        credentials.setPassword(encoder.encode(newPassword));
+        credentialRepository.save(credentials);
+
+    }
+
     private UserEntity getUserEntityByUserId(String userId) {
         var userByUserId = userRepository.findUserByUserId(userId);
         return userByUserId.orElseThrow(() -> new ApiException("User not found"));
+    }
+
+    private ConfirmationEntity getUserConfirmation(UserEntity user) {
+        return confirmationRepository.findByUserEntity(user).orElse(null);
     }
 
     private boolean verifyCode(String qrCode, String qrCodeSecret) {

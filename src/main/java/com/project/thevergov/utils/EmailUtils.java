@@ -54,6 +54,7 @@ public class EmailUtils {
      * @return The password reset URL
      */
     public static String getResetPasswordUrl(String host, String key) {
-        return host + "/verify/password?key=" + key;
+        // TODO think about changing to token as name instead of key
+        return host + "/user/verify/password?key=" + key;
     }
 }

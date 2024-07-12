@@ -1,9 +1,7 @@
 package com.project.thevergov.restcontroller;
 
 import com.project.thevergov.domain.Response;
-import com.project.thevergov.dto.QrCodeRequest;
-import com.project.thevergov.dto.User;
-import com.project.thevergov.dto.UserRequest;
+import com.project.thevergov.dto.*;
 import com.project.thevergov.enumeration.TokenType;
 import com.project.thevergov.service.JwtService;
 import com.project.thevergov.service.UserService;
@@ -98,6 +96,58 @@ public class UserController {
     public ResponseEntity<Response> verifyAccount(@RequestParam("key") String key, HttpServletRequest request) {
         userService.verifyAccount(key);
         return ResponseEntity.ok().body(getResponse(request, emptyMap(), "Account verified.", OK));
+    }
+
+    @PostMapping("/resetpassword")
+    public ResponseEntity<Response> resetPassword(
+            @RequestBody @Valid EmailRequest emailRequest,
+            HttpServletRequest request) {
+
+        userService.resetPassword(
+                emailRequest.getEmail());
+
+        return ResponseEntity
+                .created(getUri())
+                .body(getResponse(request, emptyMap(),
+                        "An email has been sent to reset your password.",
+                        OK));
+    }
+
+    @GetMapping("/verify/password")
+    public ResponseEntity<Response> verifyPasswordKey(
+            //TODO rename to token
+            @RequestParam("key") String key,
+            HttpServletRequest request) {
+
+        var user = userService.verifyPasswordKey(
+                key);
+
+        return ResponseEntity
+                .created(getUri())
+                .body(getResponse(request,
+                        Map.of("user", user),
+                        "Enter new password.",
+                        OK));
+    }
+
+    @PostMapping("/resetpassword")
+    public ResponseEntity<Response> doResetPassword(
+            @RequestBody @Valid ResetPasswordRequest resetPasswordRequest,
+            HttpServletRequest request) {
+
+        userService.updatePassword(
+                resetPasswordRequest.getUserId(),
+                resetPasswordRequest.getNewPassword(),
+                resetPasswordRequest.getConfirmNewPassword()
+        );
+
+        return ResponseEntity
+                .created(getUri())
+                .body(getResponse(
+                        request,
+                        emptyMap(),
+                        "Password reset successfully",
+                        OK));
     }
 
     private URI getUri() {
