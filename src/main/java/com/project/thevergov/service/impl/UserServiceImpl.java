@@ -37,6 +37,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.project.thevergov.constant.Constants.NINETY_DAYS;
 import static com.project.thevergov.utils.UserUtils.*;
 import static com.project.thevergov.validation.UserValidation.verifyAccountStatus;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
@@ -247,6 +248,42 @@ public class UserServiceImpl implements UserService {
     public void updateRole(String userId, String role) {
         var userEntity = getUserEntityByUserId(userId);
         userEntity.setRole(getRoleName(role));
+        userRepository.save(userEntity);
+    }
+
+    @Override
+    public void toggleAccountExpired(String userId) {
+        var userEntity = getUserEntityByUserId(userId);
+        userEntity.setAccountNonExpired(!userEntity.isAccountNonExpired());
+        userRepository.save(userEntity);
+    }
+
+    @Override
+    public void toggleAccountLocked(String userId) {
+        var userEntity = getUserEntityByUserId(userId);
+
+        userEntity.setAccountNonLocked(!userEntity.isAccountNonLocked());
+        userRepository.save(userEntity);
+    }
+
+    @Override
+    public void toggleAccountEnabled(String userId) {
+        var userEntity = getUserEntityByUserId(userId);
+
+        userEntity.setEnabled(!userEntity.isEnabled());
+        userRepository.save(userEntity);
+    }
+
+    @Override
+    public void toggleCredentialsExpired(String userId) {
+        var userEntity = getUserEntityByUserId(userId);
+        var credentials = getUserCredentialById(userEntity.getId());
+        credentials.setUpdatedAt(LocalDateTime.of(1995, 7, 12, 11, 11));
+//        if (credentials.getUpdatedAt().plusDays(NINETY_DAYS).isAfter(LocalDateTime.now())) {
+//            credentials.setUpdatedAt(LocalDateTime.of(1995, 7, 12, 11, 11));
+//        } else {
+//            credentials.setUpdatedAt(LocalDateTime.now());
+//        }
         userRepository.save(userEntity);
     }
 

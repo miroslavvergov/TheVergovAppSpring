@@ -121,7 +121,51 @@ public class UserController {
                         OK));
     }
 
-    @PostMapping("/resetpassword")
+    @PatchMapping("/toggle-account-expired")
+    public ResponseEntity<Response> toggleAccountExpired(@AuthenticationPrincipal User userPrincipal, HttpServletRequest request) {
+        userService.toggleAccountExpired(userPrincipal.getUserId());
+        return ResponseEntity.ok().body(
+                getResponse(
+                        request,
+                        emptyMap()
+                        , "Account is updated successfully",
+                        OK));
+    }
+
+    @PatchMapping("/toggle-account-locked")
+    public ResponseEntity<Response> toggleAccountLocked(@AuthenticationPrincipal User userPrincipal, HttpServletRequest request) {
+        userService.toggleAccountLocked(userPrincipal.getUserId());
+        return ResponseEntity.ok().body(
+                getResponse(
+                        request,
+                        emptyMap()
+                        , "Account is updated successfully",
+                        OK));
+    }
+
+    @PatchMapping("/toggle-account-enabled")
+    public ResponseEntity<Response> toggleAccountEnabled(@AuthenticationPrincipal User userPrincipal, HttpServletRequest request) {
+        userService.toggleAccountEnabled(userPrincipal.getUserId());
+        return ResponseEntity.ok().body(
+                getResponse(
+                        request,
+                        emptyMap()
+                        , "Account is updated successfully",
+                        OK));
+    }
+
+    @PatchMapping("/toggle-credentials-expired")
+    public ResponseEntity<Response> toggleCredentialsExpired(@AuthenticationPrincipal User userPrincipal, HttpServletRequest request) {
+        userService.toggleCredentialsExpired(userPrincipal.getUserId());
+        return ResponseEntity.ok().body(
+                getResponse(
+                        request,
+                        emptyMap()
+                        , "Account is updated successfully",
+                        OK));
+    }
+
+    @PostMapping("/reset-password")
     public ResponseEntity<Response> resetPassword(
             @RequestBody @Valid EmailRequest emailRequest,
             HttpServletRequest request) {
@@ -153,7 +197,7 @@ public class UserController {
                         OK));
     }
 
-    @PostMapping("/resetpassword")
+    @PostMapping("/reset-password")
     public ResponseEntity<Response> doResetPassword(
             @RequestBody @Valid ResetPasswordRequest resetPasswordRequest,
             HttpServletRequest request) {
