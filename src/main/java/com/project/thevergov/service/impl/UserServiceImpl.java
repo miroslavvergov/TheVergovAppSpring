@@ -287,6 +287,22 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userEntity);
     }
 
+    @Override
+    public void updatePassword(String userId, String password, String newPassword, String confirmNewPassword) {
+        if (!confirmNewPassword.equals(newPassword)) {
+            throw new ApiException("Passwords don't match. Please try again.");
+        }
+        var user = getUserByUserId(userId);
+        var credentials = getUserCredentialById(user.getId());
+        if (!encoder.matches(password, credentials.getPassword())) {
+            throw new ApiException("Existing password is incorrect. Please try again.");
+        }
+        credentials.setPassword(encoder.encode(newPassword));
+        credentialRepository.save(credentials);
+
+
+    }
+
     private UserEntity getUserEntityByUserId(String userId) {
         var userByUserId = userRepository.findUserByUserId(userId);
         return userByUserId.orElseThrow(() -> new ApiException("User not found"));

@@ -51,4 +51,6 @@ public interface UserService {
     void toggleAccountEnabled(String userId);
 
     void toggleCredentialsExpired(String userId);
+
+    void updatePassword(String userId, String password, String newPassword, String confirmNewPassword);
 }

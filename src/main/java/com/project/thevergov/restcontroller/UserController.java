@@ -110,6 +110,19 @@ public class UserController {
         return ResponseEntity.ok().body(getResponse(request, Map.of("user", user), "User is updated successfully", OK));
     }
 
+    @PatchMapping("/update-password")
+    public ResponseEntity<Response> updatePassword(
+            @AuthenticationPrincipal User userPrincipal,
+            @RequestBody UpdatePasswordRequest passwordRequest,
+            HttpServletRequest request) {
+        userService.updatePassword(userPrincipal.getUserId(), passwordRequest.getPassword(), passwordRequest.getNewPassword(), passwordRequest.getConfirmNewPassword());
+        return ResponseEntity.ok().body(
+                getResponse(request,
+                        emptyMap(),
+                        "Password is updated successfully",
+                        OK));
+    }
+
     @PatchMapping("/updaterole")
     public ResponseEntity<Response> updateRole(@AuthenticationPrincipal User userPrincipal, @RequestBody RoleRequest roleRequest, HttpServletRequest request) {
         userService.updateRole(userPrincipal.getUserId(), roleRequest.getRole());
