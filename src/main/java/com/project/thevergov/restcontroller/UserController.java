@@ -10,17 +10,22 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 
+import static com.project.thevergov.constant.Constants.PHOTO_STORAGE_PATH;
 import static com.project.thevergov.utils.RequestUtils.getResponse;
 import static java.util.Collections.emptyMap;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 @RestController
 @RequestMapping(path = {"/user"})
@@ -123,7 +128,7 @@ public class UserController {
                         OK));
     }
 
-    @PatchMapping("/updaterole")
+    @PatchMapping("/update-role")
     public ResponseEntity<Response> updateRole(@AuthenticationPrincipal User userPrincipal, @RequestBody RoleRequest roleRequest, HttpServletRequest request) {
         userService.updateRole(userPrincipal.getUserId(), roleRequest.getRole());
         return ResponseEntity.ok().body(
@@ -131,6 +136,20 @@ public class UserController {
                         request,
                         emptyMap()
                         , "Role is updated successfully",
+                        OK));
+    }
+
+    @PatchMapping("/photo")
+    public ResponseEntity<Response> uploadPhoto(
+            @AuthenticationPrincipal User userPrincipal,
+            @RequestParam("file") MultipartFile file,
+            HttpServletRequest request) {
+        var imageUrl = userService.uploadPhoto(userPrincipal.getUserId(), file);
+        return ResponseEntity.ok().body(
+                getResponse(
+                        request,
+                        Map.of("imageUrl", imageUrl)
+                        , "Photo updated successfully",
                         OK));
     }
 
@@ -228,6 +247,12 @@ public class UserController {
                         emptyMap(),
                         "Password reset successfully",
                         OK));
+    }
+
+    @GetMapping(value = "/image/{filename}", produces = {IMAGE_PNG_VALUE})
+    public byte[] getPhoto(@PathVariable("filename") String filename) throws IOException {
+        return Files.readAllBytes(Paths.get(PHOTO_STORAGE_PATH + filename));
+
     }
 
     private URI getUri() {

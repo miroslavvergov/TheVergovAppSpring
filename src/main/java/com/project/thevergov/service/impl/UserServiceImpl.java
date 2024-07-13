@@ -32,14 +32,21 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 import static com.project.thevergov.constant.Constants.NINETY_DAYS;
+import static com.project.thevergov.constant.Constants.PHOTO_STORAGE_PATH;
 import static com.project.thevergov.utils.UserUtils.*;
 import static com.project.thevergov.validation.UserValidation.verifyAccountStatus;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.logging.log4j.util.Strings.EMPTY;
 
 
@@ -302,6 +309,34 @@ public class UserServiceImpl implements UserService {
 
 
     }
+
+    @Override
+    public String uploadPhoto(String userId, MultipartFile file) {
+        var user = getUserEntityByUserId(userId);
+        var photoUrl = photoFunction.apply(userId, file);
+        user.setImageUrl(photoUrl + "timestamp=" + System.currentTimeMillis());
+        userRepository.save(user);
+        return photoUrl;
+    }
+
+    private final BiFunction<String, MultipartFile, String> photoFunction = (id, file) -> {
+        var fileName = id + ".png";
+        try {
+            var fileStorageLocation = Paths.get(PHOTO_STORAGE_PATH).toAbsolutePath().normalize();
+            if (!Files.exists(fileStorageLocation)) {
+                Files.createDirectories(fileStorageLocation);
+            }
+            Files.copy(file.getInputStream(), fileStorageLocation.resolve(fileName), REPLACE_EXISTING);
+            return ServletUriComponentsBuilder
+                    .fromCurrentContextPath()
+                    .path("/user/image/" + fileName).toUriString();
+
+        } catch (Exception e) {
+
+            throw new ApiException("unable to save image");
+
+        }
+    };
 
     private UserEntity getUserEntityByUserId(String userId) {
         var userByUserId = userRepository.findUserByUserId(userId);

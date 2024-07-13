@@ -4,6 +4,7 @@ import com.project.thevergov.dto.User;
 import com.project.thevergov.entity.CredentialEntity;
 import com.project.thevergov.entity.RoleEntity;
 import com.project.thevergov.enumeration.LoginType;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Service interface for managing users in the application.
@@ -53,4 +54,6 @@ public interface UserService {
     void toggleCredentialsExpired(String userId);
 
     void updatePassword(String userId, String password, String newPassword, String confirmNewPassword);
+
+    String uploadPhoto(String userId, MultipartFile file);
 }
