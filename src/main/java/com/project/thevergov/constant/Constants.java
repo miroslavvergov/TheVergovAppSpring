@@ -68,4 +68,31 @@ public class Constants {
      * In this case, managers have the same permissions as regular users, focusing on article management.
      */
     public static final String MANAGER_AUTHORITIES = "article:create,article:read,article:update,article:delete";
+
+
+    // QUERIES
+
+    public static final String SELECT_PAPERS_QUERY = "SELECT paper.id,\n" +
+            "     paper.paper_id,\n" +
+            "     paper.name,\n" +
+            "     paper.description,\n" +
+            "     paper.uri,\n" +
+            "     paper.icon,\n" +
+            "     paper.size,\n" +
+            "     paper.formatted_size,\n" +
+            "     paper.extension,\n" +
+            "     paper.reference_id,\n" +
+            "     paper.created_at,\n" +
+            "     paper.updated_at\n" +
+            "     CONCAT(owner.first_name, ' ', owner.last_name) AS owner_name,\n" +
+            "     owner.email AS owner.email,\n" +
+            "     owner.phone AS owner.phone,\n" +
+            "     owner.last_login AS owner_last_login,\n" +
+            "     CONCAT(updater.first_name, ' ', updater.last_name) AS updater_name,\n" +
+            "     FROM papers paper\n" +
+            "     JOIN users owner ON owner.id = paper.created_by\n" +
+            "     JOIN users updater ON updater.id = paper.updated_by";
+
+    public static final String SELECT_COUNT_PAPERS_QUERY = "SELECT COUNT(*) FROM papers";
+
 }
