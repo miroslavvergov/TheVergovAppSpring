@@ -84,6 +84,21 @@ CREATE TABLE IF NOT EXISTS articles
     CONSTRAINT fk_articles_created_by FOREIGN KEY (created_by) REFERENCES users (id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_articles_updated_by FOREIGN KEY (updated_by) REFERENCES users (id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS papers
+(
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    paper_id VARCHAR(255) NOT NULL UNIQUE,
+    title      VARCHAR(255) NOT NULL,
+    content    TEXT         NOT NULL,
+    icon       TEXT         NOT NULL,
+    created_by BIGINT       NOT NULL,
+    created_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_by BIGINT       NOT NULL,
+    updated_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    constraint uq_articles_paper_id unique (paper_id),
+    CONSTRAINT fk_papers_created_by FOREIGN KEY (created_by) REFERENCES users (id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_papers_updated_by FOREIGN KEY (updated_by) REFERENCES users (id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE
+);
 
 CREATE TABLE IF NOT EXISTS article_categories
 (
