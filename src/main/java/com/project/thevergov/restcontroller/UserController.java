@@ -3,6 +3,7 @@ package com.project.thevergov.restcontroller;
 import com.project.thevergov.domain.Response;
 import com.project.thevergov.dto.*;
 import com.project.thevergov.enumeration.TokenType;
+import com.project.thevergov.handler.ApiLogoutHandler;
 import com.project.thevergov.service.JwtService;
 import com.project.thevergov.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +37,8 @@ public class UserController {
     private final UserService userService;
 
     private final JwtService jwtService;
+
+    private final ApiLogoutHandler apiLogoutHandler;
 
     @PostMapping("/register")
     public ResponseEntity<Response> saveUser(
@@ -128,17 +132,6 @@ public class UserController {
                         OK));
     }
 
-    @PatchMapping("/update-role")
-    public ResponseEntity<Response> updateRole(@AuthenticationPrincipal User userPrincipal, @RequestBody RoleRequest roleRequest, HttpServletRequest request) {
-        userService.updateRole(userPrincipal.getUserId(), roleRequest.getRole());
-        return ResponseEntity.ok().body(
-                getResponse(
-                        request,
-                        emptyMap()
-                        , "Role is updated successfully",
-                        OK));
-    }
-
     @PatchMapping("/photo")
     public ResponseEntity<Response> uploadPhoto(
             @AuthenticationPrincipal User userPrincipal,
@@ -150,6 +143,33 @@ public class UserController {
                         request,
                         Map.of("imageUrl", imageUrl)
                         , "Photo updated successfully",
+                        OK));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Response> logout(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication) {
+
+        apiLogoutHandler.logout(request, response, authentication);
+
+        return ResponseEntity.ok().body(
+                getResponse(
+                        request,
+                        emptyMap(),
+                        "You have logged out successfully",
+                        OK));
+    }
+
+    @PatchMapping("/update-role")
+    public ResponseEntity<Response> updateRole(@AuthenticationPrincipal User userPrincipal, @RequestBody RoleRequest roleRequest, HttpServletRequest request) {
+        userService.updateRole(userPrincipal.getUserId(), roleRequest.getRole());
+        return ResponseEntity.ok().body(
+                getResponse(
+                        request,
+                        emptyMap()
+                        , "Role is updated successfully",
                         OK));
     }
 
