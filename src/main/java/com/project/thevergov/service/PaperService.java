@@ -1,5 +1,6 @@
 package com.project.thevergov.service;
 
+import com.project.thevergov.dto.Paper;
 import com.project.thevergov.dto.api.iPaper;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -14,7 +15,7 @@ public interface PaperService {
 
     Page<iPaper> getPapers(int page, int size, String name);
 
-    Collection<iPaper> savePapers(String userId, List<MultipartFile> papers);
+    Collection<Paper> savePapers(String userId, List<MultipartFile> papers);
 
     iPaper updatePaper(String paperId, String name, String description);
 
