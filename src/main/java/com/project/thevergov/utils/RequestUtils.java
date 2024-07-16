@@ -4,6 +4,7 @@
 package com.project.thevergov.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.project.thevergov.domain.Response;
 import com.project.thevergov.exception.ApiException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,10 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.*;
 
 import java.util.Map;
 import java.util.function.*;
@@ -23,8 +21,7 @@ import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static java.time.LocalDateTime.*;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCauseMessage;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
@@ -95,6 +92,24 @@ public class RequestUtils {
     public static void handleErrorResponse(HttpServletRequest request, HttpServletResponse response, Exception exception) {
         if (exception instanceof AccessDeniedException) {
             Response apiResponse = getErrorResponse(request, response, exception, FORBIDDEN);
+            writeResponse.accept(response, apiResponse);
+        } else if (exception instanceof InsufficientAuthenticationException) {
+            Response apiResponse = getErrorResponse(request, response, exception, UNAUTHORIZED);
+            writeResponse.accept(response, apiResponse);
+        } else if (exception instanceof MismatchedInputException) {
+            Response apiResponse = getErrorResponse(request, response, exception, BAD_REQUEST);
+            writeResponse.accept(response, apiResponse);
+        } else if (
+                exception instanceof DisabledException ||
+                        exception instanceof LockedException ||
+                        exception instanceof BadCredentialsException ||
+                        exception instanceof CredentialsExpiredException ||
+                        exception instanceof ApiException
+        ) {
+            Response apiResponse = getErrorResponse(request, response, exception, BAD_REQUEST);
+            writeResponse.accept(response, apiResponse);
+        } else {
+            Response apiResponse = getErrorResponse(request, response, exception, INTERNAL_SERVER_ERROR);
             writeResponse.accept(response, apiResponse);
         }
     }
