@@ -72,27 +72,56 @@ public class Constants {
 
     // QUERIES
 
-    public static final String SELECT_PAPERS_QUERY = "SELECT paper.id,\n" +
-            "     paper.paper_id,\n" +
-            "     paper.name,\n" +
-            "     paper.description,\n" +
-            "     paper.uri,\n" +
-            "     paper.icon,\n" +
-            "     paper.size,\n" +
-            "     paper.formatted_size,\n" +
-            "     paper.extension,\n" +
-            "     paper.reference_id,\n" +
-            "     paper.created_at,\n" +
-            "     paper.updated_at\n" +
-            "     CONCAT(owner.first_name, ' ', owner.last_name) AS owner_name,\n" +
-            "     owner.email AS owner.email,\n" +
-            "     owner.phone AS owner.phone,\n" +
-            "     owner.last_login AS owner_last_login,\n" +
-            "     CONCAT(updater.first_name, ' ', updater.last_name) AS updater_name,\n" +
-            "     FROM papers paper\n" +
-            "     JOIN users owner ON owner.id = paper.created_by\n" +
-            "     JOIN users updater ON updater.id = paper.updated_by";
+    public static final String SELECT_PAPERS_QUERY =
+            "SELECT paper.id, " +
+                    "    paper.paper_id, " +
+                    "    paper.name, " +
+                    "    paper.description, " +
+                    "    paper.uri, " +
+                    "    paper.icon, " +
+                    "    paper.size, " +
+                    "    paper.formatted_size, " +
+                    "    paper.extension, " +
+                    "    paper.reference_id, " +
+                    "    paper.created_at, " +
+                    "    paper.updated_at, " +
+                    "    CONCAT(owner.first_name, ' ', owner.last_name) AS owner_name, " +
+                    "    owner.email AS owner_email, " +  // Modified line
+                    "    owner.phone AS owner_phone, " +  // Modified line
+                    "    owner.last_login AS owner_last_login, " +
+                    "    CONCAT(updater.first_name, ' ', updater.last_name) AS updater_name " +
+                    "FROM papers paper " +
+                    "JOIN users owner ON owner.id = paper.created_by " +
+                    "JOIN users updater ON updater.id = paper.updated_by;"; // Added semicolon
+
 
     public static final String SELECT_COUNT_PAPERS_QUERY = "SELECT COUNT(*) FROM papers";
+
+
+    public static final String SELECT_PAPERS_BY_NAME_QUERY =
+            "SELECT paper.id, " +
+                    "    paper.paper_id, " +
+                    "    paper.name, " +
+                    "    paper.description, " +
+                    "    paper.uri, " +
+                    "    paper.icon, " +
+                    "    paper.size, " +
+                    "    paper.formatted_size, " +
+                    "    paper.extension, " +
+                    "    paper.reference_id, " +
+                    "    paper.created_at, " +
+                    "    paper.updated_at, " +
+                    "    CONCAT(owner.first_name, ' ', owner.last_name) AS owner_name, " +
+                    "    owner.email AS owner_email, " +
+                    "    owner.phone AS owner_phone, " +
+                    "    owner.last_login AS owner_last_login, " +
+                    "    CONCAT(updater.first_name, ' ', updater.last_name) AS updater_name " +
+                    "FROM papers paper " +
+                    "JOIN users owner ON owner.id = paper.created_by " +
+                    "JOIN users updater ON updater.id = paper.updated_by " +
+                    "WHERE name ~* :paperName;";
+
+
+    public static final String SELECT_COUNT_PAPERS_BY_NAME_QUERY = "SELECT COUNT(*) FROM papers WHERE name ~* :paperName";
 
 }

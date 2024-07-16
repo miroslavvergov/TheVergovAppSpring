@@ -58,7 +58,27 @@ public class PaperController {
                 .ok()
                 .body(getResponse(request,
                         Map.of("papers", papers),
-                        "Paper(s) fetched",
+                        "Paper(s) retrieved",
+                        OK));
+
+    }
+
+    @GetMapping
+    public ResponseEntity<Response> searchPapers
+            (@AuthenticationPrincipal User user,
+             HttpServletRequest request,
+             @RequestParam(value = "page", defaultValue = "0") int page,
+             @RequestParam(value = "size", defaultValue = "5") int size,
+             @RequestParam(value = "name", defaultValue = "") String name
+            ) {
+
+        var papers = paperService.getPapers(page, size, name);
+
+        return ResponseEntity
+                .ok()
+                .body(getResponse(request,
+                        Map.of("papers", papers),
+                        "Paper(s) retrieved",
                         OK));
 
     }

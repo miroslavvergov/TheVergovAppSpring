@@ -13,11 +13,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.print.Pageable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -45,12 +45,12 @@ public class PaperServiceImpl implements PaperService {
     @Override
     public Page<iPaper> getPapers(int page, int size) {
         // TODO
-        return paperRepository.findPapers((Pageable) PageRequest.of(page, size, Sort.by("name")));
+        return paperRepository.findPapers(PageRequest.of(page, size, Sort.by("name")));
     }
 
     @Override
     public Page<iPaper> getPapers(int page, int size, String name) {
-        return null;
+        return paperRepository.findPapersByName(name, PageRequest.of(page, size, Sort.by("name")));
     }
 
     @Override
