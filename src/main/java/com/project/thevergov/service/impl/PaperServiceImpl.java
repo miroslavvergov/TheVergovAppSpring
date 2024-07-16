@@ -103,7 +103,7 @@ public class PaperServiceImpl implements PaperService {
 
     @Override
     public iPaper getPaperByPaperId(String paperId) {
-        return null;
+        return paperRepository.findPaperByPaperId(paperId).orElseThrow(() -> new ApiException("Paper not found"));
     }
 
     @Override

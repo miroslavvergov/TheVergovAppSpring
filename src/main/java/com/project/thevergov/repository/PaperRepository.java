@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 import static com.project.thevergov.constant.Constants.*;
 
 public interface PaperRepository extends JpaRepository<PaperEntity, Long> {
@@ -40,4 +42,8 @@ public interface PaperRepository extends JpaRepository<PaperEntity, Long> {
 
     @Query(countQuery = SELECT_COUNT_PAPERS_BY_NAME_QUERY, value = SELECT_PAPERS_BY_NAME_QUERY, nativeQuery = true)
     Page<iPaper> findPapersByName(@Param("paperName") String paperName, Pageable pageable);
+
+
+    @Query(value = SELECT_PAPER_QUERY, nativeQuery = true)
+    Optional<iPaper> findPaperByPaperId(String paperId);
 }

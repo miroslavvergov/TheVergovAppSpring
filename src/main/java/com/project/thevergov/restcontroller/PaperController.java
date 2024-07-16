@@ -63,7 +63,7 @@ public class PaperController {
 
     }
 
-    @GetMapping
+    @GetMapping("search")
     public ResponseEntity<Response> searchPapers
             (@AuthenticationPrincipal User user,
              HttpServletRequest request,
@@ -79,6 +79,25 @@ public class PaperController {
                 .body(getResponse(request,
                         Map.of("papers", papers),
                         "Paper(s) retrieved",
+                        OK));
+
+    }
+
+    @GetMapping("/{paperId}")
+    public ResponseEntity<Response> getPaper
+            (@AuthenticationPrincipal User user,
+             @PathVariable("paperId") String paperId,
+             HttpServletRequest request
+
+            ) {
+
+        var paper = paperService.getPaperByPaperId(paperId);
+
+        return ResponseEntity
+                .ok()
+                .body(getResponse(request,
+                        Map.of("paper", paper),
+                        "Paper retrieved",
                         OK));
 
     }
