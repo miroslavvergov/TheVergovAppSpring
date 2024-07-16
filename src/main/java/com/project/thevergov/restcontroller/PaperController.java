@@ -10,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,7 @@ public class PaperController {
     private PaperService paperService;
 
     @PostMapping("/upload")
+    @PreAuthorize("hasAnyAuthority('paper:create') or hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<Response> savePapers
             (@AuthenticationPrincipal User user,
              @RequestParam("files") List<MultipartFile> papers,
@@ -51,6 +53,7 @@ public class PaperController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('paper:read') or hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<Response> getPapers
             (@AuthenticationPrincipal User user,
              HttpServletRequest request,
@@ -70,6 +73,7 @@ public class PaperController {
     }
 
     @GetMapping("search")
+    @PreAuthorize("hasAnyAuthority('paper:read') or hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<Response> searchPapers
             (@AuthenticationPrincipal User user,
              HttpServletRequest request,
@@ -90,6 +94,7 @@ public class PaperController {
     }
 
     @GetMapping("/{paperId}")
+    @PreAuthorize("hasAnyAuthority('paper:read') or hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<Response> getPaper
             (@AuthenticationPrincipal User user,
              @PathVariable("paperId") String paperId,
@@ -109,6 +114,7 @@ public class PaperController {
     }
 
     @PatchMapping
+    @PreAuthorize("hasAnyAuthority('paper:update') or hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<Response> updatePaper
             (@AuthenticationPrincipal User user,
              @RequestBody UpdatePaperRequest paper,
@@ -129,6 +135,7 @@ public class PaperController {
     }
 
     @GetMapping("/download/{paperName}")
+    @PreAuthorize("hasAnyAuthority('paper:read') or hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<Resource> downloadPaper
             (
                     @AuthenticationPrincipal User user,

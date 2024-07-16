@@ -322,6 +322,12 @@ public class UserServiceImpl implements UserService {
         return fromUserEntity(userEntity, userEntity.getRole(), getUserCredentialById(userEntity.getId()));
     }
 
+    @Override
+    public List<User> getUsers() {
+        // TODO
+        return userRepository.findAll();
+    }
+
     private final BiFunction<String, MultipartFile, String> photoFunction = (id, file) -> {
         var fileName = id + ".png";
         try {

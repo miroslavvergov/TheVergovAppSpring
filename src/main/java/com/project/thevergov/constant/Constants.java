@@ -49,25 +49,25 @@ public class Constants {
      * USER_AUTHORITIES: The set of permissions granted to regular users.
      * In this case, users can perform CRUD operations on articles.
      */
-    public static final String USER_AUTHORITIES = "article:create,article:read,article:update,article:delete";
+    public static final String USER_AUTHORITIES = "paper:create,paper:read,paper:update,paper:delete";
 
     /**
      * ADMIN_AUTHORITIES: The set of permissions granted to administrators.
      * Administrators have full control over articles and basic management of users (CRUD).
      */
-    public static final String ADMIN_AUTHORITIES = "user:create,user:read,user:update,article:create,article:read,article:update,article:delete";
+    public static final String ADMIN_AUTHORITIES = "user:create,user:read,user:update,paper:create,paper:read,paper:update,paper:delete";
 
     /**
      * SUPER_ADMIN_AUTHORITIES: The set of permissions granted to super administrators.
      * Super administrators have ultimate control over both users and articles, including the ability to delete users.
      */
-    public static final String SUPER_ADMIN_AUTHORITIES = "user:create,user:read,user:update,user:delete,article:create,article:read,article:update,article:delete";
+    public static final String SUPER_ADMIN_AUTHORITIES = "user:create,user:read,user:update,user:delete,paper:create,paper:read,paper:update,paper:delete";
 
     /**
      * MANAGER_AUTHORITIES: The set of permissions granted to managers.
      * In this case, managers have the same permissions as regular users, focusing on article management.
      */
-    public static final String MANAGER_AUTHORITIES = "article:create,article:read,article:update,article:delete";
+    public static final String MANAGER_AUTHORITIES = "paper:create,paper:read,paper:update,paper:delete";
 
 
     // QUERIES

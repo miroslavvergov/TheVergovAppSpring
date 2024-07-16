@@ -6,6 +6,8 @@ import com.project.thevergov.entity.RoleEntity;
 import com.project.thevergov.enumeration.LoginType;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * Service interface for managing users in the application.
  * <p>
@@ -58,4 +60,6 @@ public interface UserService {
     String uploadPhoto(String userId, MultipartFile file);
 
     User getUserById(Long id);
+
+    List<User> getUsers();
 }
