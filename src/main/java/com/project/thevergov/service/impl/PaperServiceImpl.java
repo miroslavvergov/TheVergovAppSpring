@@ -11,6 +11,7 @@ import com.project.thevergov.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -97,7 +98,7 @@ public class PaperServiceImpl implements PaperService {
     }
 
     private PaperEntity getPaperEntity(String paperId) {
-        return paperRepository.findPaperById(paperId).orElseThrow(() -> new ApiException("Paper not found"));
+        return paperRepository.findByPaperId(paperId).orElseThrow(() -> new ApiException("Paper not found"));
     }
 
     @Override
@@ -111,7 +112,15 @@ public class PaperServiceImpl implements PaperService {
     }
 
     @Override
-    public Resource getResource(String documentName) {
-        return null;
+    public Resource getResource(String paperName) {
+        try {
+            var filePath = Paths.get(FILE_STORAGE).toAbsolutePath().normalize().resolve(paperName);
+            if (Files.exists(filePath)) {
+                throw new ApiException("Paper not found");
+            }
+            return new UrlResource(filePath.toUri());
+        } catch (Exception exception) {
+            throw new ApiException("Unable to download paper");
+        }
     }
 }

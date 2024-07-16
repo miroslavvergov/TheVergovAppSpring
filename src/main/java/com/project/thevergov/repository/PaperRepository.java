@@ -47,5 +47,5 @@ public interface PaperRepository extends JpaRepository<PaperEntity, Long> {
     @Query(value = SELECT_PAPER_QUERY, nativeQuery = true)
     Optional<iPaper> findPaperByPaperId(String paperId);
 
-    Optional<PaperEntity> findPaperById(String paperId);
+    Optional<PaperEntity> findByPaperId(String paperId);
 }

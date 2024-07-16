@@ -6,12 +6,17 @@ import com.project.thevergov.dto.User;
 import com.project.thevergov.service.PaperService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -120,6 +125,28 @@ public class PaperController {
                         Map.of("paper", updatedPaper),
                         "Paper updated",
                         OK));
+
+    }
+
+    @GetMapping("/download/{paperName}")
+    public ResponseEntity<Resource> downloadPaper
+            (
+                    @AuthenticationPrincipal User user,
+                    @PathVariable("paperName") String paperName
+            ) throws IOException {
+
+        var resource = paperService.getResource(paperName);
+        var httpHeaders = new HttpHeaders();
+        httpHeaders.add("File-Name", paperName);
+        httpHeaders.add(
+                HttpHeaders.CONTENT_DISPOSITION,
+                String.format("attachment;File-Name=%s", resource.getFilename()));
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.parseMediaType(Files.probeContentType(resource.getFile().toPath())))
+                .headers(httpHeaders)
+                .body(resource);
 
     }
 
