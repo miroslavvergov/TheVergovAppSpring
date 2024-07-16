@@ -22,7 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 
-import static com.project.thevergov.constant.Constants.PHOTO_STORAGE_PATH;
+import static com.project.thevergov.constant.Constants.FILE_STORAGE;
 import static com.project.thevergov.utils.RequestUtils.getResponse;
 import static java.util.Collections.emptyMap;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -271,7 +271,7 @@ public class UserController {
 
     @GetMapping(value = "/image/{filename}", produces = {IMAGE_PNG_VALUE})
     public byte[] getPhoto(@PathVariable("filename") String filename) throws IOException {
-        return Files.readAllBytes(Paths.get(PHOTO_STORAGE_PATH + filename));
+        return Files.readAllBytes(Paths.get(FILE_STORAGE + filename));
 
     }
 

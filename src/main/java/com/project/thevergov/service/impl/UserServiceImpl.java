@@ -18,7 +18,6 @@ import com.project.thevergov.repository.CredentialRepository;
 import com.project.thevergov.repository.RoleRepository;
 import com.project.thevergov.repository.UserRepository;
 import com.project.thevergov.service.UserService;
-import com.project.thevergov.utils.UserUtils;
 import dev.samstevens.totp.code.CodeGenerator;
 import dev.samstevens.totp.code.CodeVerifier;
 import dev.samstevens.totp.code.DefaultCodeGenerator;
@@ -39,11 +38,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiFunction;
 
-import static com.project.thevergov.constant.Constants.NINETY_DAYS;
-import static com.project.thevergov.constant.Constants.PHOTO_STORAGE_PATH;
+import static com.project.thevergov.constant.Constants.FILE_STORAGE;
 import static com.project.thevergov.utils.UserUtils.*;
 import static com.project.thevergov.validation.UserValidation.verifyAccountStatus;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -328,7 +325,7 @@ public class UserServiceImpl implements UserService {
     private final BiFunction<String, MultipartFile, String> photoFunction = (id, file) -> {
         var fileName = id + ".png";
         try {
-            var fileStorageLocation = Paths.get(PHOTO_STORAGE_PATH).toAbsolutePath().normalize();
+            var fileStorageLocation = Paths.get(FILE_STORAGE).toAbsolutePath().normalize();
             if (!Files.exists(fileStorageLocation)) {
                 Files.createDirectories(fileStorageLocation);
             }

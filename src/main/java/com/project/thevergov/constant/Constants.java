@@ -7,7 +7,7 @@ public class Constants {
 
     public static final int NINETY_DAYS = 90;
 
-    public static final String PHOTO_STORAGE_PATH = System.getProperty("user.home") + "/Downloads/uploads/";
+    public static final String FILE_STORAGE = System.getProperty("user.home") + "/Downloads/uploads/";
 
     public static final int STRENGTH = 12;
 

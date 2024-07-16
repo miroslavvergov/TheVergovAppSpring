@@ -1,6 +1,7 @@
 package com.project.thevergov.restcontroller;
 
 import com.project.thevergov.domain.Response;
+import com.project.thevergov.dto.UpdatePaperRequest;
 import com.project.thevergov.dto.User;
 import com.project.thevergov.service.PaperService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -98,6 +99,26 @@ public class PaperController {
                 .body(getResponse(request,
                         Map.of("paper", paper),
                         "Paper retrieved",
+                        OK));
+
+    }
+
+    @PatchMapping
+    public ResponseEntity<Response> updatePaper
+            (@AuthenticationPrincipal User user,
+             @RequestBody UpdatePaperRequest paper,
+             HttpServletRequest request
+
+            ) {
+
+        var updatedPaper = paperService.updatePaper(paper.getPaperId(), paper.getName(), paper.getDescription());
+
+
+        return ResponseEntity
+                .ok()
+                .body(getResponse(request,
+                        Map.of("paper", updatedPaper),
+                        "Paper updated",
                         OK));
 
     }

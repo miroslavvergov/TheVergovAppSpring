@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static com.project.thevergov.constant.Constants.PHOTO_STORAGE_PATH;
+import static com.project.thevergov.constant.Constants.FILE_STORAGE;
 import static com.project.thevergov.utils.PaperUtil.fromPaperEntity;
 import static com.project.thevergov.utils.PaperUtil.setIcon;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -58,23 +57,14 @@ public class PaperServiceImpl implements PaperService {
         List<Paper> newPapers = new ArrayList<>();
         var userEntity = userRepository.findUserByUserId(userId).get();
 
-        var storage = Paths.get(PHOTO_STORAGE_PATH).toAbsolutePath().normalize();
+        var storage = Paths.get(FILE_STORAGE).toAbsolutePath().normalize();
         try {
             for (MultipartFile paper : papers) {
                 var filename = cleanPath(Objects.requireNonNull(paper.getOriginalFilename()));
                 if ("..".contains(filename)) {
                     throw new ApiException(String.format("Invalid file name: %s", filename));
                 }
-                var paperEntity = PaperEntity
-                        .builder()
-                        .paperId(UUID.randomUUID().toString())
-                        .name(filename)
-                        .owner(userEntity)
-                        .extension(getExtension(filename))
-                        .uri(getPaperUri(filename))
-                        .formattedSize(byteCountToDisplaySize(paper.getSize()))
-                        .icon(setIcon((getExtension(filename))))
-                        .build();
+                var paperEntity = PaperEntity.builder().paperId(UUID.randomUUID().toString()).name(filename).owner(userEntity).extension(getExtension(filename)).uri(getPaperUri(filename)).formattedSize(byteCountToDisplaySize(paper.getSize())).icon(setIcon((getExtension(filename)))).build();
                 var savedPaper = paperRepository.save(paperEntity);
                 Files.copy(paper.getInputStream(), storage.resolve(filename), REPLACE_EXISTING);
                 Paper newPaper = fromPaperEntity(savedPaper, userService.getUserById(savedPaper.getCreatedBy()), userService.getUserById(savedPaper.getUpdatedBy()));
@@ -93,7 +83,21 @@ public class PaperServiceImpl implements PaperService {
 
     @Override
     public iPaper updatePaper(String paperId, String name, String description) {
-        return null;
+        try {
+            var paperEntity = getPaperEntity(paperId);
+            var paper = Paths.get(FILE_STORAGE).resolve(paperEntity.getName()).toAbsolutePath().normalize();
+            Files.move(paper, paper.resolveSibling(name), REPLACE_EXISTING);
+            paperEntity.setName(name);
+            paperEntity.setDescription(description);
+            paperRepository.save(paperEntity);
+            return getPaperByPaperId(paperId);
+        } catch (Exception exception) {
+            throw new ApiException("Unable to updated paper");
+        }
+    }
+
+    private PaperEntity getPaperEntity(String paperId) {
+        return paperRepository.findPaperById(paperId).orElseThrow(() -> new ApiException("Paper not found"));
     }
 
     @Override
