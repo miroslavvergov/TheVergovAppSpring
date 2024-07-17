@@ -140,7 +140,7 @@ public class UserController {
     }
 
     @PatchMapping("/mfa/setup")
-    @PreAuthorize("hasAnyAuthority('user:update') or hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('user:update') or hasAnyRole('USER','ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<Response> setupMfa(
             @AuthenticationPrincipal User userPrincipal,
             HttpServletRequest httpServletRequest) {
