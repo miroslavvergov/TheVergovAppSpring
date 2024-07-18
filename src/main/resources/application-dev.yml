@@ -14,7 +14,7 @@ EMAIL_HOST: smtp.gmail.com
 EMAIL_PORT: 587
 EMAIL_ID: vergovmiroslav@gmail.com
 EMAIL_PASSWORD:
-VERIFY_EMAIL_HOST: http://localhost:8080
+VERIFY_EMAIL_HOST: http://localhost:5173
 
 
 JWT_EXPIRATION: 432_000_000

@@ -28,7 +28,7 @@ public class EmailUtils {
      * @return The verification URL
      */
     public static String getVerificationUrl(String host, String key) {
-        return host + "/verify/account?token=" + key;
+        return host + "/user/verify/account?token=" + key;
     }
 
     /**
