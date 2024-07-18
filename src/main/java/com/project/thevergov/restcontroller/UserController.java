@@ -22,6 +22,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.project.thevergov.constant.Constants.FILE_STORAGE;
 import static com.project.thevergov.utils.RequestUtils.getResponse;
@@ -59,7 +60,8 @@ public class UserController {
     }
 
     @GetMapping("/verify/account")
-    public ResponseEntity<Response> verifyAccount(@RequestParam("key") String key, HttpServletRequest request) {
+    public ResponseEntity<Response> verifyAccount(@RequestParam("key") String key, HttpServletRequest request) throws InterruptedException {
+        TimeUnit.SECONDS.sleep(3);
         userService.verifyAccount(key);
         return ResponseEntity.ok().body(getResponse(request, emptyMap(), "Account verified.", OK));
     }
