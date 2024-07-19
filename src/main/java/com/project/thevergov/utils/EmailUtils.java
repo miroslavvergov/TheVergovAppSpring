@@ -28,7 +28,7 @@ public class EmailUtils {
      * @return The verification URL
      */
     public static String getVerificationUrl(String host, String key) {
-        return host + "/user/verify/account?token=" + key;
+        return host + "/verify/account?token=" + key;
     }
 
     /**
@@ -55,6 +55,6 @@ public class EmailUtils {
      */
     public static String getResetPasswordUrl(String host, String key) {
         // TODO think about changing to token as name instead of key
-        return host + "/user/verify/password?key=" + key;
+        return host + "/verify/password?key=" + key;
     }
 }

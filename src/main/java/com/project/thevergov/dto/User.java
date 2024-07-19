@@ -35,7 +35,6 @@ public class User {
 
     private String imageUrl;
 
-    //just an idea still
     private String lastLogin;
 
     private String createdAt;
@@ -46,18 +45,14 @@ public class User {
 
     private String authorities;
 
-    //just an idea still
     private String qrCodeImageUri;
 
-    //just an idea still
     private boolean accountNonExpired;
 
-    //just an idea still
     private boolean accountNonLocked;
 
     private boolean enabled;
 
-    //just an idea still
     private boolean mfa;
 
     private boolean credentialsNonExpired;
