@@ -1,6 +1,6 @@
 #Database
-DB_USERNAME: root
-DB_PASSWORD: Xn978541
+DB_USERNAME:
+DB_PASSWORD:
 MYSQL_HOST: localhost
 MYSQL_PORT: 3306
 MYSQL_DATABASE: thevergov_db
@@ -12,7 +12,7 @@ ACTIVE_PROFILE: dev
 #Email Config
 EMAIL_HOST: smtp.gmail.com
 EMAIL_PORT: 587
-EMAIL_ID: vergovmiroslav@gmail.com
+EMAIL_ID:
 EMAIL_PASSWORD:
 VERIFY_EMAIL_HOST: http://localhost:5173
 
