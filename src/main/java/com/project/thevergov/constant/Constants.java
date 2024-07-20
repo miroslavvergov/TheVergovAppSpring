@@ -5,33 +5,65 @@ package com.project.thevergov.constant;
  */
 public class Constants {
 
+    // Time Constants
     public static final int NINETY_DAYS = 90;
 
+    // File Storage Constants
     public static final String FILE_STORAGE = System.getProperty("user.home") + "/Downloads/uploads/";
 
+    // Security and Strength Constants
     public static final int STRENGTH = 12;
 
-    //TODO
-    public static final String[] PUBLIC_URLS = {};
-
+    // URL Constants
     public static final String BASE_PATH = "/**";
+    public static final String LOGIN_PATH = "/user/login";
 
+    // Public URL Endpoints
+    public static final String[] PUBLIC_URLS = {
+            "/user/reset-password/reset/**",
+            "/user/verify/reset-password/**",
+            "/user/reset-password/**",
+            "/user/verify/qrcode/**",
+            "/user/login/**",
+            "/user/verify/account/**",
+            "/user/register/**",
+            "/user/new/password/**",
+            "/user/verify/**",
+            "/user/reset-password/**",
+            "/user/image/**",
+            "/user/verify/password/**"
+    };
+
+    // Public Routes
+    public static final String[] PUBLIC_ROUTES = {
+            "/user/reset-password/reset",
+            "/user/verify/reset-password",
+            "/user/reset-password",
+            "/user/verify/qrcode",
+            "/user/stream",
+            "/user/id",
+            "/user/login",
+            "/user/register",
+            "/user/new/password",
+            "/user/verify",
+            "/user/refresh/token",
+            "/user/reset-password",
+            "/user/image",
+            "/user/verify/account",
+            "/user/verify/password",
+            "/user/verify/code"
+    };
+
+    // Header Constants
     public static final String FILE_NAME = "File-Name";
 
-    //TODO
-    public static final String[] PUBLIC_ROUTES = {};
-
-    public static final String LOGIN_PATH = "/user/login";
+    // Miscellaneous Constants
     public static final String AUTHORITIES = "authorities";
     public static final String EMPTY_VALUE = "empty";
-
     public static final String ROLE = "role";
-
     public static final String THE_VERGOV_APP = "THE_VERGOV_APP";
 
-
     // Role-related Constants
-
     /**
      * ROLE_PREFIX: The prefix to be added before role names.
      * This convention helps in distinguishing roles from other types of authorities.
@@ -44,7 +76,6 @@ public class Constants {
     public static final String AUTHORITY_DELIMITER = ",";
 
     // Authority Constants for Different User Roles
-
     /**
      * USER_AUTHORITIES: The set of permissions granted to regular users.
      * In this case, users can perform CRUD operations on articles.
@@ -69,9 +100,7 @@ public class Constants {
      */
     public static final String MANAGER_AUTHORITIES = "paper:create,paper:read,paper:update,paper:delete";
 
-
-    // QUERIES
-
+    // SQL Query Constants
     public static final String SELECT_PAPERS_QUERY =
             "SELECT paper.id, " +
                     "    paper.paper_id, " +
@@ -86,17 +115,15 @@ public class Constants {
                     "    paper.created_at, " +
                     "    paper.updated_at, " +
                     "    CONCAT(owner.first_name, ' ', owner.last_name) AS owner_name, " +
-                    "    owner.email AS owner_email, " +  // Modified line
-                    "    owner.phone AS owner_phone, " +  // Modified line
+                    "    owner.email AS owner_email, " +
+                    "    owner.phone AS owner_phone, " +
                     "    owner.last_login AS owner_last_login, " +
                     "    CONCAT(updater.first_name, ' ', updater.last_name) AS updater_name " +
                     "FROM papers paper " +
                     "JOIN users owner ON owner.id = paper.created_by " +
                     "JOIN users updater ON updater.id = paper.updated_by;"; // Added semicolon
 
-
     public static final String SELECT_COUNT_PAPERS_QUERY = "SELECT COUNT(*) FROM papers";
-
 
     public static final String SELECT_PAPERS_BY_NAME_QUERY =
             "SELECT paper.id, " +
@@ -121,9 +148,7 @@ public class Constants {
                     "JOIN users updater ON updater.id = paper.updated_by " +
                     "WHERE name ~* :paperName ";
 
-
     public static final String SELECT_COUNT_PAPERS_BY_NAME_QUERY = "SELECT COUNT(*) FROM papers WHERE name ~* :paperName";
-
 
     public static final String SELECT_PAPER_QUERY =
             "SELECT paper.id, " +

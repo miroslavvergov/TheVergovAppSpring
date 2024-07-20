@@ -3,6 +3,7 @@ package com.project.thevergov.service;
 import com.project.thevergov.dto.User;
 import com.project.thevergov.entity.CredentialEntity;
 import com.project.thevergov.entity.RoleEntity;
+import com.project.thevergov.entity.UserEntity;
 import com.project.thevergov.enumeration.LoginType;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,5 +62,5 @@ public interface UserService {
 
     User getUserById(Long id);
 
-    List<User> getUsers();
+    List<UserEntity> getUsers();
 }
