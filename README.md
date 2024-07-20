@@ -1,122 +1,146 @@
-Here is a comprehensive README file for your project, including a description of the application, setup instructions, technologies used, and how to contribute:
 
----
 
-# Vergov
+# Vergov Application
 
-Vergov is a robust application designed for managing user accounts, authentication, and document storage. This application supports user registration, role management, multi-factor authentication (MFA), and document handling. It includes features for user profile management, password recovery, and secure file storage.
+Vergov is a robust platform for managing users, roles, and content. It provides user authentication, role-based access, and content management through articles and papers.
 
-## Features
+## Table of Contents
 
-- **User Management**: Create, update, and manage user accounts.
-- **Role Management**: Assign and update user roles.
-- **Multi-Factor Authentication (MFA)**: Secure accounts with MFA using QR codes.
-- **Password Management**: Reset and update passwords securely.
-- **Document Storage**: Upload, update, and retrieve documents with associated metadata.
-- **Profile Management**: Upload user photos and update profile information.
+- [Technologies Used](#technologies-used)
+- [Setup Instructions](#setup-instructions)
+- [Configuration](#configuration)
+- [Database Schema](#database-schema)
+- [Usage](#usage)
+- [License](#license)
 
 ## Technologies Used
 
-- **Java**: Primary programming language.
-- **Spring Boot**: Framework for building and deploying the application.
-- **Spring Security**: Provides authentication and authorization capabilities.
-- **Spring Data JPA**: Handles database operations and object-relational mapping.
-- **Jakarta EE**: Provides enterprise features such as transactions.
-- **Lombok**: Reduces boilerplate code with annotations.
-- **ModelMapper**: Simplifies mapping between objects.
-- **Apache Commons**: Utilities for file and string operations.
-- **dev.samstevens.totp**: Library for generating and verifying TOTP codes for MFA.
-- **H2 Database**: In-memory database for development and testing.
-- **MySQL**: Relational database for production.
-- **Maven**: Build automation tool.
-- **JUnit**: Framework for writing and running tests.
+- **Java 18**: Core programming language for backend development.
+- **Spring Boot 3.3.0**: Framework for building and running the application with embedded Tomcat server and various utilities.
+- **Spring Data JPA**: Simplifies database operations and entity management.
+- **MySQL 8.3.0**: Relational database management system used for storing application data.
+- **ModelMapper 3.1.1**: Maps between objects to facilitate data transfer between layers.
+- **Lombok 1.18.32**: Reduces boilerplate code with annotations for getters, setters, and builders.
+- **Apache Commons Lang 3.14.0**: Provides utilities for common tasks such as string manipulation.
+- **Commons IO 2.15.1**: Offers utilities for IO operations.
+- **Guava 33.0.0-jre**: Google's core libraries for Java, offering utilities for collections, caching, and more.
+- **JJWT 0.12.3**: JSON Web Token (JWT) library for authentication and authorization.
+- **Spring Boot Starter Mail**: For sending emails.
+- **Testcontainers**: Provides containers for testing purposes, including MySQL.
+- **AssertJ**: Provides fluent assertions for testing.
+- **Maven Shade Plugin 3.5.0**: For creating executable JARs with dependencies.
+- **DevSamStevens TOTP 1.7.1**: For Two-Factor Authentication (2FA) support.
 
-## Getting Started
+## Setup Instructions
 
 ### Prerequisites
 
-- Java 17 or later
-- Maven 3.8 or later
-- PostgreSQL/MySQL (for production) or H2 Database (for development)
+- **Java 18** or higher
+- **MySQL 8.0** or higher
+- **Maven** (for building the project)
 
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/your-repository.git
-cd your-repository
+git clone https://github.com/yourusername/vergov.git
+cd vergov
 ```
 
-### Build the Project
+### Configure the Application
 
-```bash
-mvn clean install
-```
+1. **Database Setup**: Ensure MySQL is running and create the database:
 
-### Configure Application Properties
+   ```sql
+   CREATE DATABASE thevergov_db;
+   ```
 
-Update the `src/main/resources/application.properties` file with your database and application configurations. Example configuration:
+2. **Configuration Files**:
 
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/vergov
-spring.datasource.username=your-username
-spring.datasource.password=your-password
+   - Copy `application-dev.yml` to `application.yml` if you want to use development settings.
+   - Update `application.yml` with production settings or specific environment configurations.
 
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
+3. **Build the Project**:
 
-file.storage.path=/path/to/your/file/storage
-```
+   ```bash
+   mvn clean install
+   ```
 
-### Run the Application
+4. **Run the Application**:
 
-```bash
-mvn spring-boot:run
-```
+   ```bash
+   mvn spring-boot:run
+   ```
 
-The application will start and be accessible at `http://localhost:8080`.
+## Configuration
 
-## API Endpoints
+### Application Configuration (`application.yml`)
 
-- **User Management**:
-  - `POST /users`: Create a new user
-  - `GET /users/{userId}`: Get user details by ID
-  - `PUT /users/{userId}`: Update user details
-  - `DELETE /users/{userId}`: Delete a user
+The `application.yml` file includes configurations for:
 
-- **Role Management**:
-  - `GET /roles/{name}`: Get role details by name
-  - `PUT /users/{userId}/role`: Update user role
+- **Database**: Connection details, JPA settings, and schema initialization.
+- **Server**: Port and error handling.
+- **Email**: SMTP settings for sending emails.
+- **JWT**: JSON Web Token settings including expiration and secret.
+- **Logging**: Optional logging settings (commented out).
 
-- **Document Management**:
-  - `POST /documents`: Upload a new document
-  - `GET /documents/{filename}`: Get document by filename
-  - `PUT /documents/{filename}`: Update document metadata
-  - `DELETE /documents/{filename}`: Delete a document
+### Environment-Specific Configuration (`application-dev.yml`)
 
-- **Authentication**:
-  - `POST /auth/login`: Login with email and password
-  - `POST /auth/mfa/setup`: Setup MFA for a user
-  - `POST /auth/mfa/verify`: Verify MFA code
+This file contains environment-specific settings:
 
-## Contributing
+- **Database Credentials**: Username, password, and database details.
+- **Server Port**: Application container port.
+- **Email Settings**: SMTP host, port, and email credentials.
+- **JWT Settings**: Expiration and secret for JWT tokens.
 
-We welcome contributions to improve the Vergov application. To contribute:
+## Database Schema
 
-1. Fork the repository.
-2. Create a new branch for your feature or fix.
-3. Commit your changes and push them to your fork.
-4. Open a pull request with a clear description of your changes.
+### Key Tables
 
-Please ensure that your code adheres to the existing style and includes relevant tests.
+1. **`users`**:
+   - Manages user profiles with attributes such as user ID, email, name, and account status.
+   - Links to itself for record creation and updates.
+
+2. **`confirmations`**:
+   - Stores confirmation tokens for user actions, such as email verification.
+   - Linked to `users` for associated user details.
+
+3. **`credentials`**:
+   - Contains user passwords and security information.
+   - Linked to `users` to manage user credentials securely.
+
+4. **`articles`**:
+   - Handles content articles published in the application.
+   - Links to `users` for tracking authorship and updates.
+
+5. **`papers`**:
+   - Stores documents similar to articles but used for different purposes.
+   - Linked to `users` for creator and updater details.
+
+6. **`roles`**:
+   - Defines roles and permissions within the application.
+   - Linked to `users` through `user_roles` to manage role assignments.
+
+7. **`user_roles`**:
+   - Manages associations between users and roles.
+   - Links `users` to `roles` to define role assignments and permissions.
+
+### Relationships
+
+- **Self-Referential**: The `users` table tracks who created or updated each record.
+- **Foreign Key Constraints**: Ensures referential integrity between related tables.
+
+## Usage
+
+After setting up and running the application, you can:
+
+- **Access the Application**: Open `http://localhost:8080` (or the configured port).
+- **Explore API Endpoints**: If Swagger is enabled, visit `http://localhost:8080/authentication-docs/swagger-ui-custom.html`.
+- **Manage Users and Content**: Use the application’s web interfaces or APIs for user and content management.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-For any questions or support, please open an issue on GitHub or contact me on this address - vergovmiroslav@gmail.com).
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-This README provides a detailed overview of the Vergov back-end application, setup instructions, and information on how to contribute. Customize the placeholders (such as repository URL, email, and file paths) to fit your project specifics.
+Feel free to tailor any sections further based on your specific needs or project details!
