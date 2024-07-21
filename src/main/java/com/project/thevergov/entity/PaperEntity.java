@@ -46,13 +46,13 @@ public class PaperEntity extends Auditable {
 
     private String extension;
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
                     name = "fk_papers_owner",
-                    foreignKeyDefinition = "foreign key /* FK */ (user_id) references UserEntity",
+                    foreignKeyDefinition = "foreign key (user_id) references users(id)", // "foreign key (user_id) references user(id)"
                     value = ConstraintMode.CONSTRAINT)
     )
     private UserEntity owner;
