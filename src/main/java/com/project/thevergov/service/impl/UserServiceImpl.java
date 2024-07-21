@@ -66,7 +66,6 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder encoder; // Encoder for hashing passwords
     private final CacheStore<String, Integer> userCache; // Cache to store login attempt counts
     private final ApplicationEventPublisher publisher; // Publisher for user-related events
-    private final ModelMapper modelMapper; // Mapper for converting entities to DTOs
 
     @Override
     public void createUser(String firstName, String lastName, String username, String email, String password) {

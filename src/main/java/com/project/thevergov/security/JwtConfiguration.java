@@ -3,6 +3,7 @@ package com.project.thevergov.security;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Configuration class for JWT (JSON Web Token) settings.
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
  */
 @Getter
 @Setter
+@Configuration
 public class JwtConfiguration {
 
     /**

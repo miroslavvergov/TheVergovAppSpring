@@ -34,8 +34,8 @@ import static com.project.thevergov.utils.RequestUtils.handleErrorResponse;
  * AuthorizationFilter is a Spring Web filter responsible for handling authorization
  * based on JWT tokens for secure endpoints.
  */
-@Component
 @RequiredArgsConstructor
+@Component
 @Slf4j
 public class AuthorizationFilter extends OncePerRequestFilter {
 
