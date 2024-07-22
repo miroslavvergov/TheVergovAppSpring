@@ -1,3 +1,4 @@
+begin
 # INSERT INTO users (id, user_id, first_name, last_name, email, phone, bio,
 #                    reference_id, image_url, created_by, updated_by, created_at, updated_at, account_non_expired, account_non_locked, enabled, mfa)
 # VALUES (0, '023a7479-e7a7-079f-3ae5-a766fe25eca9', 'System', 'System', 'system@gmail.com', '1234567890', 'This is not a user but the system itself',
