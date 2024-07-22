@@ -48,4 +48,6 @@ public interface PaperRepository extends JpaRepository<PaperEntity, Long> {
     Optional<iPaper> findPaperByPaperId(String paperId);
 
     Optional<PaperEntity> findByPaperId(String paperId);
+
+    Optional<PaperEntity> findByName(String name);
 }
