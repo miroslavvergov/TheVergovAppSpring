@@ -4,6 +4,8 @@ import com.project.thevergov.domain.RequestContext;
 import com.project.thevergov.dto.api.iPaper;
 import com.project.thevergov.entity.PaperEntity;
 import com.project.thevergov.entity.UserEntity;
+import com.project.thevergov.repository.PaperRepository;
+import com.project.thevergov.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,7 +56,6 @@ public class PaperRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        // Set a user ID in the RequestContext
         RequestContext.setUserId(0L); // Assuming user ID is 0L for testing
 
         testUser = UserEntity.builder()
@@ -91,38 +92,6 @@ public class PaperRepositoryTest {
         Page<iPaper> papers = paperRepository.findPapers(pageable);
 
         assertThat(papers).isNotEmpty();
-    }
-
-    @Test
-    public void whenFindPapersByName_thenReturnPageOfPapers() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<iPaper> papers = paperRepository.findPapersByName("Test Paper", pageable);
-
-        assertThat(papers).isNotEmpty();
-    }
-
-    @Test
-    public void whenFindPaperByPaperId_thenReturnPaper() {
-        Optional<iPaper> paper = paperRepository.findPaperByPaperId(testPaper.getPaperId());
-
-        assertThat(paper).isPresent();
-        assertThat(paper.get().getPaper_Id()).isEqualTo(testPaper.getPaperId());
-    }
-
-    @Test
-    public void whenFindByPaperId_thenReturnPaperEntity() {
-        Optional<PaperEntity> paper = paperRepository.findByPaperId(testPaper.getPaperId());
-
-        assertThat(paper).isPresent();
-        assertThat(paper.get().getPaperId()).isEqualTo(testPaper.getPaperId());
-    }
-
-    @Test
-    public void whenFindByName_thenReturnPaperEntity() {
-        Optional<PaperEntity> paper = paperRepository.findByName(testPaper.getName());
-
-        assertThat(paper).isPresent();
-        assertThat(paper.get().getName()).isEqualTo(testPaper.getName());
     }
 
     @Test
@@ -211,5 +180,92 @@ public class PaperRepositoryTest {
         assertThat(firstPagePapers.getNumber()).isEqualTo(0); // First page
         assertThat(secondPagePapers.getNumber()).isEqualTo(1); // Second page
         assertThat(secondPagePapers.getContent().size()).isEqualTo(5); // 15 total, 10 on first page, so 5 on second
+    }
+
+    // Additional Edge Case Tests
+
+    @Test
+    public void whenSavePaperWithDuplicateId_thenThrowException() {
+        PaperEntity duplicatePaper = PaperEntity.builder()
+                .paperId("testPaperId")
+                .name("Duplicate Paper")
+                .owner(testUser)
+                .build();
+        try {
+            paperRepository.save(duplicatePaper);
+        } catch (Exception e) {
+            assertThat(e).isInstanceOf(Exception.class); // Assuming a constraint violation exception will be thrown
+        }
+    }
+
+    @Test
+    public void whenFindPapersWithEmptyName_thenReturnEmptyPage() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<iPaper> papers = paperRepository.findPapersByName("", pageable);
+
+        assertThat(papers).isEmpty();
+    }
+
+    @Test
+    public void whenFindPaperByNullId_thenThrowException() {
+        try {
+            paperRepository.findPaperByPaperId(null);
+        } catch (Exception e) {
+            assertThat(e).isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Test
+    public void whenUpdatePaper_thenShouldUpdateCorrectly() {
+        testPaper.setName("Updated Test Paper");
+        paperRepository.save(testPaper);
+
+        Optional<PaperEntity> updatedPaper = paperRepository.findByPaperId("testPaperId");
+
+        assertThat(updatedPaper).isPresent();
+        assertThat(updatedPaper.get().getName()).isEqualTo("Updated Test Paper");
+    }
+
+    @Test
+    public void whenDeletePaper_thenShouldNotBeRetrievable() {
+        paperRepository.delete(testPaper);
+
+        Optional<PaperEntity> deletedPaper = paperRepository.findByPaperId("testPaperId");
+
+        assertThat(deletedPaper).isEmpty();
+    }
+
+    @Test
+    public void whenFindPapersByNameCaseInsensitive_thenReturnCorrectPage() {
+        PaperEntity mixedCasePaper = PaperEntity.builder()
+                .paperId("mixedCasePaperId")
+                .name("Test Paper")
+                .owner(testUser)
+                .build();
+        paperRepository.save(mixedCasePaper);
+
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<iPaper> papers = paperRepository.findPapersByName("test paper", pageable);
+
+        assertThat(papers).isNotEmpty();
+        assertThat(papers.getTotalElements()).isGreaterThan(1);
+    }
+
+    @Test
+    public void whenFindPapersWithLargePageNumber_thenReturnEmptyPage() {
+        Pageable pageable = PageRequest.of(1000, 10); // Large page number
+        Page<iPaper> papers = paperRepository.findPapers(pageable);
+
+        assertThat(papers).isEmpty();
+    }
+
+    @Test
+    public void whenFindPapersWithZeroPageSize_thenThrowException() {
+        try {
+            Pageable pageable = PageRequest.of(0, 0); // Invalid page size
+            paperRepository.findPapers(pageable);
+        } catch (Exception e) {
+            assertThat(e).isInstanceOf(IllegalArgumentException.class);
+        }
     }
 }

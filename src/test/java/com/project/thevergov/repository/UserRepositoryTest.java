@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -79,11 +81,33 @@ public class UserRepositoryTest {
     }
 
     @Test
+    public void whenFindByEmailIgnoreCaseWithDifferentCase_thenReturnUser() {
+        Optional<UserEntity> found = userRepository.findByEmailIgnoreCase("JOHNDOE@EXAMPLE.COM");
+
+        assertThat(found).isPresent();
+        assertThat(found.get().getEmail()).isEqualTo(testUser.getEmail());
+    }
+
+    @Test
+    public void whenFindByEmailIgnoreCaseWithNonExistentEmail_thenReturnEmpty() {
+        Optional<UserEntity> found = userRepository.findByEmailIgnoreCase("nonexistent@example.com");
+
+        assertThat(found).isNotPresent();
+    }
+
+    @Test
     public void whenFindByUserId_thenReturnUser() {
         Optional<UserEntity> found = userRepository.findUserByUserId(testUser.getUserId());
 
         assertThat(found).isPresent();
         assertThat(found.get().getUserId()).isEqualTo(testUser.getUserId());
+    }
+
+    @Test
+    public void whenFindByUserIdWithNonExistentUserId_thenReturnEmpty() {
+        Optional<UserEntity> found = userRepository.findUserByUserId("nonexistentUserId");
+
+        assertThat(found).isNotPresent();
     }
 
     @Test
