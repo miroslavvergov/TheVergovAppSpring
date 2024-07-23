@@ -1,6 +1,6 @@
 package com.project.thevergov.repository;
 
-import com.project.thevergov.context.RequestContext;
+import com.project.thevergov.domain.RequestContext;
 import com.project.thevergov.entity.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,6 +46,8 @@ public class UserRepositoryTest {
 
     @BeforeEach
     public void setUp() {
+        // Set a user ID in the RequestContext
+        RequestContext.setUserId(0L); // Assuming user ID is 0L for testing
 
         testUser = UserEntity.builder()
                 .userId("testUserId")

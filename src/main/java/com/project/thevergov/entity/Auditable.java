@@ -9,7 +9,6 @@ import lombok.Getter;
 
 import lombok.Setter;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.util.AlternativeJdkIdGenerator;
@@ -45,9 +44,6 @@ public abstract class Auditable {
     @NotNull
     private Long updatedBy;
 
-    @Value("${spring.profiles.active}")
-    private static String currentProfile;
-
     //if you want to achieve a program in which you insert the foreign key through jpa additional classes would be needed
     //  // Foreign Keys for createdBy and updatedBy
     //  @ManyToOne
@@ -79,16 +75,13 @@ public abstract class Auditable {
     @PrePersist
     public void beforePersist() {
         Long userId;
-        if (currentProfile.equals("test")) {
-            userId = 0L;
-        } else {
 
-            userId = RequestContext.getUserId();
+        userId = RequestContext.getUserId();
 
-            if (userId == null) {
-                throw new ApiException("Cannot update entity without user ID in RequestContext for this thread");
-            }
+        if (userId == null) {
+            throw new ApiException("Cannot update entity without user ID in RequestContext for this thread");
         }
+
         var user = new UserEntity();
         user.setId(userId);
 
@@ -106,16 +99,13 @@ public abstract class Auditable {
     @PreUpdate
     public void beforeUpdate() {
         Long userId;
-        if (currentProfile.equals("test")) {
-            userId = 0L;
-        } else {
 
-            userId = RequestContext.getUserId();
+        userId = RequestContext.getUserId();
 
-            if (userId == null) {
-                throw new ApiException("Cannot update entity without user ID in RequestContext for this thread");
-            }
+        if (userId == null) {
+            throw new ApiException("Cannot update entity without user ID in RequestContext for this thread");
         }
+
         var user = new UserEntity();
         user.setId(userId);
 

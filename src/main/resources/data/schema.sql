@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS users
     first_name          CHARACTER VARYING(50)  NOT NULL,
     last_name           CHARACTER VARYING(50)  NOT NULL,
     email               CHARACTER VARYING(100) NOT NULL,
-    phone               CHARACTER VARYING(30)           DEFAULT NULL,
     bio                 CHARACTER VARYING(255)          DEFAULT NULL,
     reference_id        CHARACTER VARYING(255) NOT NULL,
     qr_code_secret      CHARACTER VARYING(255)          DEFAULT NULL,
@@ -62,10 +61,10 @@ CREATE TABLE IF NOT EXISTS credentials
     CONSTRAINT fk_credentials_updated_by FOREIGN KEY (updated_by) REFERENCES users (id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS documents
+CREATE TABLE IF NOT EXISTS papers
 (
     id             SERIAL PRIMARY KEY,
-    document_id    CHARACTER VARYING(255) NOT NULL,
+    paper_id    CHARACTER VARYING(255) NOT NULL,
     reference_id   CHARACTER VARYING(255) NOT NULL,
     extension      CHARACTER VARYING(10)  NOT NULL,
     formatted_size CHARACTER VARYING(20)  NOT NULL,
@@ -78,9 +77,9 @@ CREATE TABLE IF NOT EXISTS documents
     updated_by     BIGINT                 NOT NULL,
     created_at     TIMESTAMP(6) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP(6) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT uq_documents_document_id UNIQUE (document_id),
-    CONSTRAINT fk_documents_created_by FOREIGN KEY (created_by) REFERENCES users (id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT fk_documents_updated_by FOREIGN KEY (updated_by) REFERENCES users (id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE RESTRICT
+    CONSTRAINT uq_papers_paper_id UNIQUE (paper_id),
+    CONSTRAINT fk_papers_created_by FOREIGN KEY (created_by) REFERENCES users (id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_papers_updated_by FOREIGN KEY (updated_by) REFERENCES users (id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS roles
