@@ -1,7 +1,7 @@
 package com.project.thevergov.repository;
 
 import com.project.thevergov.domain.RequestContext;
-import com.project.thevergov.entity.ConfirmationEntity;
+import com.project.thevergov.entity.CredentialEntity;
 import com.project.thevergov.entity.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
-public class ConfirmationRepositoryTest {
+public class CredentialRepositoryTest {
 
     @Container
     private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:14.2")
@@ -42,13 +41,13 @@ public class ConfirmationRepositoryTest {
     }
 
     @Autowired
-    private ConfirmationRepository confirmationRepository;
+    private CredentialRepository credentialRepository;
 
     @Autowired
     private UserRepository userRepository;
 
     private UserEntity testUser;
-    private ConfirmationEntity testConfirmation;
+    private CredentialEntity testCredential;
 
     @BeforeEach
     public void setUp() {
@@ -74,39 +73,32 @@ public class ConfirmationRepositoryTest {
 
         userRepository.save(testUser);
 
-        testConfirmation = ConfirmationEntity.builder()
+        testCredential = CredentialEntity.builder()
                 .userEntity(testUser)
-                .tokenKey(UUID.randomUUID().toString())
+                .password("hashed_password")
                 .build();
 
-        confirmationRepository.save(testConfirmation);
+        credentialRepository.save(testCredential);
     }
 
     @Test
-    public void whenFindByTokenKey_thenReturnConfirmation() {
-        Optional<ConfirmationEntity> found = confirmationRepository.findByTokenKey(testConfirmation.getTokenKey());
+    public void whenGetCredentialByUserEntityId_thenReturnCredential() {
+        Optional<CredentialEntity> found = credentialRepository.getCredentialByUserEntityId(testUser.getId());
 
         assertThat(found).isPresent();
-        assertThat(found.get().getTokenKey()).isEqualTo(testConfirmation.getTokenKey());
+        assertThat(found.get().getUserEntity().getId()).isEqualTo(testUser.getId());
+        assertThat(found.get().getPassword()).isEqualTo(testCredential.getPassword());
     }
 
     @Test
-    public void whenFindByTokenKeyWithNonExistentToken_thenReturnEmpty() {
-        Optional<ConfirmationEntity> found = confirmationRepository.findByTokenKey("nonexistentTokenKey");
+    public void whenGetCredentialByNonExistentUserEntityId_thenReturnEmpty() {
+        Optional<CredentialEntity> found = credentialRepository.getCredentialByUserEntityId(999L);
 
         assertThat(found).isNotPresent();
     }
 
     @Test
-    public void whenFindByUserEntity_thenReturnConfirmation() {
-        Optional<ConfirmationEntity> found = confirmationRepository.findByUserEntity(testUser);
-
-        assertThat(found).isPresent();
-        assertThat(found.get().getUserEntity().getUserId()).isEqualTo(testUser.getUserId());
-    }
-
-    @Test
-    public void whenSave_thenReturnSavedConfirmation() {
+    public void whenSave_thenReturnSavedCredential() {
         UserEntity newUser = UserEntity.builder()
                 .userId("newUserId")
                 .firstName("Jane")
@@ -127,16 +119,17 @@ public class ConfirmationRepositoryTest {
 
         userRepository.save(newUser);
 
-        ConfirmationEntity newConfirmation = ConfirmationEntity.builder()
+        CredentialEntity newCredential = CredentialEntity.builder()
                 .userEntity(newUser)
-                .tokenKey(UUID.randomUUID().toString())
+                .password("new_hashed_password")
                 .build();
 
-        ConfirmationEntity savedConfirmation = confirmationRepository.save(newConfirmation);
+        CredentialEntity savedCredential = credentialRepository.save(newCredential);
 
-        Optional<ConfirmationEntity> found = confirmationRepository.findById(savedConfirmation.getId());
+        Optional<CredentialEntity> found = credentialRepository.findById(savedCredential.getId());
 
         assertThat(found).isPresent();
-        assertThat(found.get().getTokenKey()).isEqualTo(newConfirmation.getTokenKey());
+        assertThat(found.get().getUserEntity().getId()).isEqualTo(newUser.getId());
+        assertThat(found.get().getPassword()).isEqualTo(newCredential.getPassword());
     }
 }
